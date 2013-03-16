@@ -1,0 +1,57 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>lunasync</title>
+<link rel=stylesheet href=style.css>
+
+<div id=site class=unloaded>
+    <header>
+        <h1><a href=/>lunasync</a></h1>
+        <button id=create-new>Create new stream</button>
+    </header>
+
+    <article id=homepage class=unloaded>
+        lunasync lets you make synced youtube video playlists ("streams"), where everyone sees the same video at the same time! Click "Create new stream" to get started.
+    </article>
+
+    <article id=page404 class=unloaded>
+        404 - luna not found. This page either never existed or no longer existed, are you sure you typed the URL right?
+    </article>
+
+    <article id=viewpage class=unloaded>
+        <div id=meta>
+            Title: <input disabled type=text id=title value="loading..."><br>
+            Viewing link: <input disabled type=text value="loading..." id=view-link><br>
+            <div id=control class=unloaded>
+                You have control of the stream.<br>
+                Stream control link: <input disabled type=text value="loading..." id=control-link> (be careful who you share this with!)
+            </div>
+        </div>
+        <div id=viewer>
+            <div id=playlist-holder>
+                <div id=buttons>
+                    <button disabled id=rm-button>Remove</button> <button disabled id=play-button>Play</button><br>
+                    <input disabled type=text placeholder="Add URL (press enter)" id=add-url>
+                </div>
+                <select disabled multiple id=playlist>
+                    <option>Track 1</option>
+                    <option class=now-playing>▶ Track 2</option>
+                    <option>Track 3</option>
+                </select>
+            </div>
+            <div id=player></div>
+            <div id=chat>
+                <div id=chatlog></div>
+                <input type=text placeholder="loading..." id=chatbox>
+            </div>
+        </div>
+    </article>
+
+    <footer>
+        &copy; 2013 <a href="http://ajf.me/">Andrea Faulds</a><br>
+        Background is from <a href="http://quasdar.deviantart.com/art/Equestria-at-Night-263381180">here</a>
+    </footer>
+</div>
+<noscript>lunasync requires JavaScript support to function. Please enable JavaScript (if you have disabled it), disable or create exceptions for any script/ad blockers or use a browser that supports JavaScript, where applicable.</noscript>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src=lunasync.js></script>

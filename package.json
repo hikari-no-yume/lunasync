@@ -1,0 +1,7 @@
+{
+    "name": "lunasync",
+    "version": "0.0.0",
+    "dependencies": {
+        "websocket": "latest"
+    }
+}

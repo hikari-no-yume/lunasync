@@ -1,0 +1,132 @@
+/* sane box model */
+* {
+  -webkit-box-sizing: border-box; /* Android ≤ 2.3, iOS ≤ 4 */
+     -moz-box-sizing: border-box; /* Firefox 1+ */
+          box-sizing: border-box; /* Chrome, IE 8+, Opera, Safari 5.1 */
+}
+
+/* make sure the background always uses full height */
+html, body {
+    min-height: 100%;
+}
+
+body {
+    background-image: url(bg.svg);
+    background-color: rgb(95, 49, 132);
+    background-size: cover;
+    padding: 0;
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 11pt;
+    color: white;
+}
+
+a {
+    color: white;
+}
+a:visited {
+    color: #ccc;
+}
+
+.unloaded {
+    display: none;
+}
+
+header, article, #meta, #viewer, #playlist-holder, #chat, #chatlog, footer {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 5px;
+}
+
+header {
+    clear: both;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+#meta {
+    margin-bottom: 5px;
+}
+
+#viewer {
+    clear: both;
+    overflow: hidden;
+    min-height: 480px;
+}
+
+input {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    min-width: 200px;
+}
+
+#title {
+    width: 300px;
+}
+
+#playlist-holder {
+    float: left;
+    width: 250px;
+    height: 480px;
+}
+
+#buttons {
+    height: 60px;
+}
+
+#playlist {
+    border: none;
+    color: white;
+    background: none;
+    width: 240px;
+    height: 410px;
+}
+
+.now-playing {
+    background-color: rgba(255, 127, 0, 0.5);
+}
+
+#player {
+    float: left;
+    margin-left: 5px;
+}
+
+#chat {
+    float: left;
+    margin-left: 5px;
+    width: 250px;
+    height: 480px;
+}
+#chatlog {
+    height: 440px;
+    overflow: auto;
+    margin-bottom: 5px;
+}
+
+#chatbox {
+    height: 20px;
+}
+
+footer {
+    margin-top: 5px;
+}
+
+h1 {
+    color: white;
+    font-weight: normal;
+    text-shadow: 0px 0px 5px rgb(124, 167, 250), 0px 0px 5px rgb(124, 167, 250), 0px 0px 5px rgb(124, 167, 250);
+    margin: 0;
+    float: left;
+}
+
+h1 a {
+    text-decoration: inherit;
+    color: inherit !important;
+}
+
+header button {
+    display: block;
+    float: left;
+    margin-top: 8px;
+    margin-left: 6px;
+}
