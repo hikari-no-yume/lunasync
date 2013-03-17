@@ -95,16 +95,18 @@
         $('create-new').onclick = function () {
             var title;
 
-            title = prompt('Enter a title:', '') || 'My Stream';
-            doAJAX('POST', '/new', {
-                title: title
-            }, function (response) {
-                // back up the secret
-                localStorage.setItem('secret-' + response.stream.id, response.stream.secret);
-                window.location = '/' + response.stream.id + '?control=' + response.stream.secret;
-            }, function (xhr) {
-                alert('Error while trying to create new sync:\nResponse code:\n' + xhr.status + '\nError message:' + xhr.responseText);
-            });
+            title = prompt('Enter a title:', '');
+            if (title) {
+                doAJAX('POST', '/new', {
+                    title: title
+                }, function (response) {
+                    // back up the secret
+                    localStorage.setItem('secret-' + response.stream.id, response.stream.secret);
+                    window.location = '/' + response.stream.id + '?control=' + response.stream.secret;
+                }, function (xhr) {
+                    alert('Error while trying to create new sync:\nResponse code:\n' + xhr.status + '\nError message:' + xhr.responseText);
+                });
+            }
         };
     }
 
