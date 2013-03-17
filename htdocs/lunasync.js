@@ -336,23 +336,19 @@
 
                         $('move-up-btn').disabled = false;
                         $('move-up-btn').onclick = function () {
-                            var i, items = selectedOptions($('playlist')), item, current;
-
-                            current = state.playlist[state.current];
+                            var i, items = selectedOptions($('playlist')), item;
 
                             // move selected playlist items up
                             for (i = 0; i < items.length; i++) {
                                 if (items[i].dataLSindex - 1 >= 0) {
                                     item = state.playlist.splice(items[i].dataLSindex, 1);
                                     state.playlist.splice(items[i].dataLSindex - 1, 0, item[0]);
+                                    if (state.current === items[i].dataLSindex) {
+                                        state.current--;
+                                    }
+                                    updatePlaylist();
                                 }
                             }
-
-                            if (current !== state.playlist[state.current]) {
-                                state.current = state.playlist.indexOf(current);
-                            }
-
-                            updatePlaylist();
 
                             // push update to server by overwriting playlist
                             // (this may create race conditions...)
@@ -365,23 +361,19 @@
 
                         $('move-down-btn').disabled = false;
                         $('move-down-btn').onclick = function () {
-                            var i, items = selectedOptions($('playlist')), item, current;
-
-                            current = state.playlist[state.current];
+                            var i, items = selectedOptions($('playlist')), item;
 
                             // move selected playlist items up
                             for (i = 0; i < items.length; i++) {
                                 if (items[i].dataLSindex + 1 < state.playlist.length) {
                                     item = state.playlist.splice(items[i].dataLSindex, 1);
                                     state.playlist.splice(items[i].dataLSindex + 1, 0, item[0]);
+                                    if (state.current === items[i].dataLSindex) {
+                                        state.current++;
+                                    }
+                                    updatePlaylist();
                                 }
                             }
-
-                            if (current !== state.playlist[state.current]) {
-                                state.current = state.playlist.indexOf(current);
-                            }
-
-                            updatePlaylist();
 
                             // push update to server by overwriting playlist
                             // (this may create race conditions...)
