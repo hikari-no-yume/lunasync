@@ -4,7 +4,7 @@
     var API_SERVER = window.location.hostname + ':9003',
         SITE_URL = 'http://lunasync.ajf.me';
 
-    var mode, socket, player;
+    var mode, socket, player, ytReady = false;
 
     var state = {
         playing: false,
@@ -15,6 +15,11 @@
     function $(id) {
         return document.getElementById(id);
     }
+
+    window.onYouTubePlayerReady = function () {
+        ytReady = true;
+        player = $('player');
+    };
 
     window.onload = function () {
         var id, control;
@@ -71,6 +76,7 @@
     }
 
     function send(msg) {
+        console.log(msg);
         socket.send(JSON.stringify(msg));
     }
 
@@ -97,10 +103,71 @@
 
     // sync viewing page
     function initView(id, control) {
-        var url;
-
         // unhide view page
         $('viewpage').className = '';
+
+        if (!ytReady) {
+            window.onYouTubePlayerReady = function () {
+                player = $('player');
+                initRestView(id, control);
+            };
+        } else {
+            initRestView(id, control);
+        }
+    }
+
+    function initRestView(id, control) {
+        var url;
+
+        window.onStateChange = function (pstate) {
+            var cueIndex;
+
+            // if we are controlling
+            if (haveControl) {
+                // if video paused and it was playing according to known state
+                if (pstate === 2 /* YT.PlayerState.PAUSED */ && state.playing) {
+                    // broadcast state change
+                    send({
+                        type: 'stop',
+                        time: player.getCurrentTime()
+                    });
+                    state.playing = false;
+                    console.log('stop!');
+                // if video started playing and it was paused according to known state
+                } else if (pstate === 1 /*YT.PlayerState.PLAYING*/ && !state.playing) {
+                    // broadcast state change
+                    send({
+                        type: 'play',
+                        time: player.getCurrentTime()
+                    });
+                    state.playing = true;
+                    console.log('play!');
+                // if the video ended
+                } else if (pstate === 0 /*YT.PlayerState.ENDED*/) {
+                    // if we haven't reached the end of the playlist
+                    if (state.current + 1 < state.playlist.length) {
+                        // cue next video
+                        cueIndex = state.current + 1;
+                    } else {
+                        // cue first video
+                        cueIndex = 0;
+                    }
+
+                    state.current = cueIndex;
+                    state.playing = true;
+
+                    send({
+                        type: 'cue',
+                        current: cueIndex
+                    });
+
+                    player.loadVideoById(state.playlist[cueIndex].id);
+
+                    updatePlaylist();
+                }
+            }
+        };
+        player.addEventListener('onStateChange', 'onStateChange');
 
         socket = new WebSocket('ws://' + API_SERVER, ['lunasync']);
         socket.onopen = function () {
@@ -118,6 +185,8 @@
             var msg, stream, elem;
 
             msg = JSON.parse(event.data);
+
+            console.log(msg.type);
 
             switch (msg.type) {
                 case 'stream_info':
@@ -141,10 +210,12 @@
                     state.playing = stream.playing;
                     state.current = stream.current;
                     if (state.current !== null) {
-                        player.cueVideoById(state.playlist[state.current].id, stream.time);
-                    }
-                    if (state.playing) {
-                        player.playVideo();
+                        if (state.playing) {
+                            player.loadVideoById(state.playlist[state.current].id);
+                        } else {
+                            player.cueVideoById(state.playlist[state.current].id);
+                        }
+                        player.seekTo(stream.time);
                     }
 
                     // if we have control of the stream
@@ -288,8 +359,7 @@
                     if (state.current === null) {
                         player.cueVideoById('');
                     } else {
-                        player.cueVideoById(state.playlist[state.current].id);
-                        player.playVideo();
+                        player.loadVideoById(state.playlist[state.current].id);
                     }
                     updatePlaylist();
                 break;
@@ -399,67 +469,4 @@
             }
         }
     }
-
-    window.onYouTubeIframeAPIReady = function () {
-        player = new YT.Player('player', {
-            height: '480',
-            width: '788',
-            videoId: '',
-            events: {
-                'onReady': function (event) {
-                    //event.target.playVideo();
-                },
-                'onStateChange': function (event) {
-                    var cueIndex;
-
-                    // if we are controlling
-                    if (haveControl) {
-                        // if video paused and it was playing according to known state
-                        if (event.data === YT.PlayerState.PAUSED && state.playing) {
-                            // broadcast state change
-                            send({
-                                type: 'stop',
-                                time: player.getCurrentTime()
-                            });
-                            state.playing = false;
-                            console.log('stop!');
-                        // if video started playing and it was paused according to known state
-                        } else if (event.data === YT.PlayerState.PLAYING && !state.playing) {
-                            // broadcast state change
-                            send({
-                                type: 'play',
-                                time: player.getCurrentTime()
-                            });
-                            state.playing = true;
-                            console.log('play!');
-                        // if the video ended
-                        } else if (event.data === YT.PlayerState.ENDED) {
-                            // if we haven't reached the end of the playlist
-                            if (state.current + 1 < state.playlist.length) {
-                                // cue next video
-                                cueIndex = state.current + 1;
-                            } else {
-                                // cue first video
-                                cueIndex = 0;
-                            }
-
-                            state.current = cueIndex;
-                            state.playing = true;
-
-                            send({
-                                type: 'cue',
-                                current: cueIndex
-                            });
-
-                            player.cueVideoById(state.playlist[cueIndex].id);
-                            player.playVideo();
-
-                            updatePlaylist();
-                        }
-                    }
-                },
-                
-            }
-        });
-    };
 }());
