@@ -9,8 +9,9 @@
     var state = {
         playing: false,
         current: null,
-        playlist: []
-    }, haveControl = false, chatNick = null;
+        playlist: [],
+        poll: null
+    }, haveControl = false, pollVote = null, chatNick = null;
 
     function $(id) {
         return document.getElementById(id);
@@ -240,9 +241,13 @@
                     state.playing = stream.playing;
                     state.current = stream.current;
                     state.playlist = stream.playlist;
+                    state.poll = stream.poll;
 
                     // display playlist
                     updatePlaylist();
+
+                    // display poll
+                    updatePoll();
 
                     // cue and play correct video
                     state.playing = stream.playing;
@@ -508,6 +513,13 @@
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
+                case 'poll':
+                    state.poll = msg.poll;
+                    if (msg.fresh) {
+                        pollVote = null;
+                    }
+                    updatePoll();
+                break;
                 case 'msg':
                     elem = document.createElement('div');
                     elem.appendChild(document.createTextNode(msg.nick + ': ' + msg.msg));
@@ -531,6 +543,7 @@
                     $('logout-btn').onclick = function () {
                         navigator.id.logout();
                     };
+                    updatePoll();
                 break;
                 case 'nick_in_use':
                     alert('The nick "' + msg.nick + '" is in use - log out first.');
@@ -589,6 +602,46 @@
             option.appendChild(document.createTextNode(state.playlist[i].title));
             option.dataLSindex = i;
             $('playlist').appendChild(option);
+        }
+    }
+
+    function updatePoll() {
+        var i, elem, name, option, btn, poll = state.poll;
+
+        if (poll) {
+            $('poll').className = '';
+            $('poll').innerHTML = '';
+            elem = document.createElement('h2');
+            elem.appendChild(document.createTextNode('Poll: ' + poll.title));
+            $('poll').appendChild(elem);
+            elem = document.createElement('ul');
+            for (name in poll.options) {
+                if (poll.options.hasOwnProperty(name)) {
+                    option = document.createElement('li');
+                    if (pollVote === null && chatNick !== null) {
+                        btn = document.createElement('button');
+                        btn.appendChild(document.createTextNode(name));
+                        (function (name) {
+                            btn.onclick = function () {
+                                send({
+                                    type: 'vote',
+                                    option: name
+                                });
+                                pollVote = name;
+                                updatePoll();
+                            };
+                        }(name));
+                        option.appendChild(btn);
+                    } else {
+                        option.appendChild(document.createTextNode((pollVote === name ? 'X ' : '') + name));
+                    }
+                    option.appendChild(document.createTextNode(' (' + poll.options[name] + ' votes)'));
+                    elem.appendChild(option);
+                }
+            }
+            $('poll').appendChild(elem);
+        } else {
+            $('poll').className = 'unloaded';
         }
     }
 

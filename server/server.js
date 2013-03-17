@@ -92,6 +92,7 @@ var server = http.createServer(function(request, response) {
                 time: null,
                 playlist: [],
                 timeFrom: secs(),
+                poll: null,
                 // secret used to control the stream
                 secret: generateSecret()
             };
@@ -148,7 +149,7 @@ wsServer.on('request', function(request) {
     }
 
     connection.on('message', function (message) {
-        var msg, i, users, nonEmptyStreams;
+        var msg, i, users, nonEmptyStreams, args, results, name;
 
         // handle unexpected packet types
         // we don't use binary frames
@@ -187,7 +188,8 @@ wsServer.on('request', function(request) {
                             control: stream.secret === msg.control,
                             conn: connection,
                             chat_nick: null,
-                            email: null
+                            email: null,
+                            poll_vote: null
                         };
                         clients.push(client);
                         send({
@@ -200,7 +202,8 @@ wsServer.on('request', function(request) {
                                 playing: stream.playing,
                                 current: stream.current,
                                 time: stream.time + (secs() - stream.timeFrom),
-                                playlist: stream.playlist
+                                playlist: stream.playlist,
+                                poll: stream.poll || null
                             },
                             control: stream.secret === msg.control
                         });
@@ -231,6 +234,21 @@ wsServer.on('request', function(request) {
                             }
                         });
                         console.log('now ' + users + ' users viewing stream ' + client.stream.id);
+                        // inform of commands
+                        if (client.control) {
+                            send({
+                                type: 'chat_info',
+                                msg: 'Since you are in control of the stream, you can use the following commands:'
+                            });
+                            send({
+                                type: 'chat_info',
+                                msg: '/poll title,option,option,... (e.g. /poll Best Pony?,Rainbow Dash,Fluttershy,Rarity) - runs a poll'
+                            });
+                            send({
+                                type: 'chat_info',
+                                msg: '/closepoll - closes the poll'
+                            });
+                        }
                     } else {
                         send({
                             type: 'error',
@@ -359,6 +377,7 @@ wsServer.on('request', function(request) {
                     connection.close();
                     return;
                 }
+                // stats command
                 if (msg.msg === '/stats') {
                     nonEmptyStreams = [];
                     clients.forEach(function (cl) {
@@ -369,6 +388,67 @@ wsServer.on('request', function(request) {
                     send({
                         type: 'chat_info',
                         msg: streams.length + ' streams (' + nonEmptyStreams.length + ' active), ' + clients.length + ' users online'
+                    });
+                // run poll
+                } else if (msg.msg.substr(0, 6) === '/poll ' && client.control) {
+                    args = msg.msg.substr(6).split(',');
+                    if (args.length > 2) {
+                        client.stream.poll = {
+                            title: args[0],
+                            options: {}
+                        };
+                        args.slice(1).forEach(function (arg) {
+                            client.stream.poll.options[arg] = 0;
+                        });
+                        saveStreams();
+                        // update each client
+                        clients.forEach(function (cl) {
+                            if (cl.stream === client.stream) {
+                                sendTo(cl.conn, {
+                                    type: 'poll',
+                                    poll: client.stream.poll,
+                                    fresh: true
+                                });
+                                sendTo(cl.conn, {
+                                    type: 'chat_info',
+                                    msg: 'Poll opened'
+                                });
+                                cl.poll_vote = null;
+                            }
+                        });
+                    } else {
+                        send({
+                            type: 'chat_info',
+                            msg: '/poll needs at least 2 options (e.g. /poll Best Pony,Twilight,Rainbow Dash'
+                        });
+                    }
+                // close poll
+                } else if (msg.msg.substr(0, 10) === '/closepoll' && client.control) {
+                    if (!client.stream.poll) {
+                        return;
+                    }
+                    results = client.stream.poll.title + ' results: ';
+                    for (name in client.stream.poll.options) {
+                        if (client.stream.poll.options.hasOwnProperty(name)) {
+                            results += name + ' - ' + client.stream.poll.options[name] + ' votes;';
+                        }
+                    }
+                    client.stream.poll = null;
+                    saveStreams();
+                    // update each client
+                    clients.forEach(function (cl) {
+                        if (cl.stream === client.stream) {
+                            sendTo(cl.conn, {
+                                type: 'poll',
+                                poll: null,
+                                fresh: true
+                            });
+                            sendTo(cl.conn, {
+                                type: 'chat_info',
+                                msg: 'Poll closed - ' + results
+                            });
+                            cl.poll_vote = null;
+                        }
                     });
                 // normal message
                 } else {
@@ -383,6 +463,53 @@ wsServer.on('request', function(request) {
                         }
                     });
                 }
+            break;
+            case 'vote':
+                if (client.chat_nick === null) {
+                    send({
+                        type: 'error',
+                        error: 'not_in_chat'
+                    });
+                    connection.close();
+                    return;
+                }
+                if (!client.stream.poll) {
+                    send({
+                        type: 'error',
+                        error: 'no_such_poll'
+                    });
+                    connection.close();
+                    return;
+                }
+                if (client.poll_vote !== null) {
+                    send({
+                        type: 'error',
+                        error: 'already_voted'
+                    });
+                    connection.close();
+                    return;
+                }
+                if (!client.stream.poll.options.hasOwnProperty(msg.option)) {
+                    send({
+                        type: 'error',
+                        error: 'no_such_option'
+                    });
+                    connection.close();
+                    return;
+                }
+                client.stream.poll.options[msg.option]++;
+                client.poll_vote = msg.option;
+                saveStreams();
+                // update each client
+                clients.forEach(function (cl) {
+                    if (cl.stream === client.stream) {
+                        sendTo(cl.conn, {
+                            type: 'poll',
+                            poll: client.stream.poll,
+                            fresh: false
+                        });
+                    }
+                });
             break;
             case 'update_playlist':
                 // check that they have control of stream
