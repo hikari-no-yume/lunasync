@@ -186,6 +186,7 @@ wsServer.on('request', function(request) {
                             },
                             control: stream.secret === msg.control
                         });
+                        // count users in stream chat
                         users = [];
                         clients.forEach(function (cl) {
                             if (cl.stream === client.stream && cl.chat_nick !== null) {
@@ -195,6 +196,21 @@ wsServer.on('request', function(request) {
                         send({
                             type: 'chat_info',
                             msg: users.length + ' users in chat: ' + users.join(', ')
+                        });
+                        // count users viewing stream
+                        users = 0;
+                        clients.forEach(function (cl) {
+                            if (cl.stream === client.stream) {
+                                users++;
+                            }
+                        });
+                        clients.forEach(function (cl) {
+                            if (cl.stream === client.stream) {
+                                sendTo(cl.conn, {
+                                    type: 'chat_info',
+                                    msg: 'now ' + users + ' users viewing stream'
+                                });
+                            }
                         });
                     } else {
                         send({
@@ -453,6 +469,22 @@ wsServer.on('request', function(request) {
                     }
                 });
             }
+
+            // count users viewing stream
+            users = 0;
+            clients.forEach(function (cl) {
+                if (cl.stream === client.stream) {
+                    users++;
+                }
+            });
+            clients.forEach(function (cl) {
+                if (cl.stream === client.stream) {
+                    sendTo(cl.conn, {
+                        type: 'chat_info',
+                        msg: 'now ' + users + ' users viewing stream'
+                    });
+                }
+            });
         }
     });
 });
