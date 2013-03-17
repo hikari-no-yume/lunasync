@@ -57,7 +57,6 @@
             } else if (localStorage.getItem('secret-' + id) !== null) {
                 control = localStorage.getItem('secret-' + id);
                 window.location = '/' + id + '#control=' + control;
-                return;
             }
             initView(id, control);
         } else {
@@ -460,7 +459,9 @@
                                 $('login-btn').innerHTML = 'logging in...';
                             }
                         },
-                        onlogout: function () {}
+                        onlogout: function () {
+                            window.location.reload();
+                        }
                     });
                     window.onresize = scrollChatlog;
                 break;
@@ -495,13 +496,15 @@
                 break;
                 case 'join':
                     elem = document.createElement('div');
-                    elem.appendChild(document.createTextNode(msg.nick + ' joined chat'));
+                    elem.className = 'chat-join';
+                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' joined chat'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
                 case 'leave':
                     elem = document.createElement('div');
-                    elem.appendChild(document.createTextNode(msg.nick + ' left chat'));
+                    elem.className = 'chat-leave';
+                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' left chat'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
@@ -513,6 +516,7 @@
                 break;
                 case 'chat_info':
                     elem = document.createElement('div');
+                    elem.className = 'chat-info';
                     elem.appendChild(document.createTextNode('* ' + msg.msg));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -523,6 +527,10 @@
                     $('chatbox').disabled = false;
                     $('login-btn').className = 'unloaded';
                     $('chatbox').className = '';
+                    $('logout-btn').className = '';
+                    $('logout-btn').onclick = function () {
+                        navigator.id.logout();
+                    };
                 break;
                 case 'nick_in_use':
                     alert('The nick "' + msg.nick + '" is in use - log out first.');
