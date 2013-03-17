@@ -4,7 +4,7 @@
     var API_SERVER = window.location.hostname + ':9003',
         SITE_URL = 'http://lunasync.ajf.me';
 
-    var mode, socket, player, ytReady = false;
+    var mode, socket, player, ytReady = false, errored = false;
 
     var state = {
         playing: false,
@@ -179,7 +179,11 @@
             });
         };
         socket.onerror = socket.onclose = function (err) {
+            if (errored) {
+                return;
+            }
             $('viewpage').innerHTML = 'Error communicating with server, lost connection (server may be down, lunasync may have updated, try refreshing):\n' + err;
+            errored = true;
         };
         socket.onmessage = function (event) {
             var msg, stream, elem;
