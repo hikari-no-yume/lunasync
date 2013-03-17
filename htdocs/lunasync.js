@@ -633,7 +633,7 @@
                         }(name));
                         option.appendChild(btn);
                     } else {
-                        option.appendChild(document.createTextNode((pollVote === name ? 'X ' : '') + name));
+                        option.appendChild(document.createTextNode((pollVote === name ? '▶ ' : '') + name));
                     }
                     option.appendChild(document.createTextNode(' (' + poll.options[name] + ' votes)'));
                     elem.appendChild(option);
