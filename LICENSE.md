@@ -1,7 +1,7 @@
 LICENSE
 =======
 
-lunasync (except for background) © 2013 Andrea Faulds.
+lunasync (except where otherwise noted) © 2013 Andrea Faulds.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
