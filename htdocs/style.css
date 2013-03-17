@@ -72,10 +72,39 @@ input {
     width: 300px;
 }
 
-#playlist-holder {
-    float: left;
-    width: 250px;
-    height: 480px;
+@media screen and (min-width: 1063px) {
+    #playlist-holder {
+        float: left;
+        width: 250px;
+        height: 480px;
+    }
+
+    #playlist {
+        width: 240px;
+        height: 410px;
+    }
+
+    #player {
+        float: left;
+        margin-left: 5px;
+    }
+}
+@media screen and (max-width: 1062px) {
+    #playlist-holder {
+        clear: both;
+        width: 788px;
+        height: 270px;
+    }
+
+    #playlist {
+        width: 778px;
+        height: 200px;
+    }
+
+    #player {
+        clear: both;
+        margin-top: 5px;
+    }
 }
 
 #buttons {
@@ -86,17 +115,10 @@ input {
     border: none;
     color: white;
     background: none;
-    width: 240px;
-    height: 410px;
 }
 
 .now-playing {
     background-color: rgba(255, 127, 0, 0.5);
-}
-
-#player {
-    float: left;
-    margin-left: 5px;
 }
 
 @media screen and (min-width: 1318px) {
@@ -113,11 +135,25 @@ input {
         word-wrap: break-word;
     }
 }
-@media screen and (max-width: 1317px) {
+@media screen and (min-width: 1063px) and (max-width: 1317px) {
     #chat {
         clear: both;
         margin-top: 5px;
         width: 1043px;
+        height: 240px;
+    }
+    #chatlog {
+        height: 200px;
+        overflow: auto;
+        margin-bottom: 5px;
+        word-wrap: break-word;
+    }
+}
+@media screen and (max-width: 1062px) {
+    #chat {
+        clear: both;
+        margin-top: 5px;
+        width: 788px;
         height: 240px;
     }
     #chatlog {
