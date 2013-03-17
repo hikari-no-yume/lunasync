@@ -43,6 +43,14 @@ header {
     margin-bottom: 5px;
 }
 
+#homepage {
+    clear: both;
+    overflow: hidden;
+}
+#homepage img {
+    float: left;
+}
+
 #meta {
     margin-bottom: 5px;
 }
