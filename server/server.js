@@ -211,6 +211,13 @@ wsServer.on('request', function(request) {
                     connection.close();
                 }
             break;
+            case 're_sync':
+                send({
+                    type: 'play',
+                    time: stream.time + (secs() - stream.timeFrom),
+                    playing: stream.playing
+                });
+            break;
             case 'set_nick':
                 // check if nick is taken
                 for (i = 0; i < clients.length; i++) {

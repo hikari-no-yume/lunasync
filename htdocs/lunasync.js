@@ -337,6 +337,15 @@
                             }
                         };
                         $('playlist').disabled = false;
+                    } else {
+                        // only enable re-sync button if not in control
+                        // (otherwise is a fairly fruitless exercise)
+                        $('re-sync').disabled = false;
+                        $('re-sync').onclick = function () {
+                            send({
+                                type: 're_sync'
+                            });
+                        };
                     }
 
                     // make chat work
