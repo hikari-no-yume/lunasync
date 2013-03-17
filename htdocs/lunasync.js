@@ -227,7 +227,7 @@
                     // cue and play correct video
                     state.playing = stream.playing;
                     state.current = stream.current;
-                    if (state.current !== null) {
+                    if (state.current !== null && state.playlist.length) {
                         if (state.playing) {
                             player.loadVideoById(state.playlist[state.current].id, stream.time);
                         } else {
