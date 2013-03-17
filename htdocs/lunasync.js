@@ -508,7 +508,7 @@
                 break;
                 case 'chat_info':
                     elem = document.createElement('div');
-                    elem.appendChild(document.createTextNode(msg.msg));
+                    elem.appendChild('* ' + document.createTextNode(msg.msg));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
