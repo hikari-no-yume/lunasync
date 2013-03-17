@@ -19,6 +19,8 @@
     window.onYouTubePlayerReady = function () {
         ytReady = true;
         player = $('player');
+        // reload page if youtube player reloads to avoid initialising twice
+        window.onYouTubePlayerReady = function () { window.location.reload(); };
     };
 
     window.onload = function () {
@@ -112,6 +114,8 @@
         if (!ytReady) {
             window.onYouTubePlayerReady = function () {
                 player = $('player');
+                // reload page if youtube player reloads to avoid initialising twice
+                window.onYouTubePlayerReady = function () { window.location.reload(); };
                 initRestView(id, control);
             };
         } else {
