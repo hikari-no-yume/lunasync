@@ -76,7 +76,6 @@
     }
 
     function send(msg) {
-        console.log(msg);
         socket.send(JSON.stringify(msg));
     }
 
@@ -132,7 +131,6 @@
                         time: player.getCurrentTime()
                     });
                     state.playing = false;
-                    console.log('stop!');
                 // if video started playing and it was paused according to known state
                 } else if (pstate === 1 /*YT.PlayerState.PLAYING*/ && !state.playing) {
                     // broadcast state change
@@ -141,7 +139,6 @@
                         time: player.getCurrentTime()
                     });
                     state.playing = true;
-                    console.log('play!');
                 // if the video ended
                 } else if (pstate === 0 /*YT.PlayerState.ENDED*/) {
                     // if we haven't reached the end of the playlist
@@ -189,8 +186,6 @@
             var msg, stream, elem;
 
             msg = JSON.parse(event.data);
-
-            console.log(msg.type);
 
             switch (msg.type) {
                 case 'stream_info':
@@ -370,41 +365,35 @@
                     updatePlaylist();
                 break;
                 case 'play':
-                    console.log('play');
                     state.playing = true;
                     player.seekTo(msg.time, true);
                     player.playVideo();
                 break;
                 case 'stop':
-                    console.log('stop');
                     state.playing = false;
                     player.seekTo(msg.time, true);
                     player.pauseVideo();
                 break;
                 case 'join':
                     elem = document.createElement('div');
-                    console.log(msg.nick + ' joined chat');
                     elem.appendChild(document.createTextNode(msg.nick + ' joined chat'));
                     $('chatlog').appendChild(elem);
                     $('chatlog').scrollTop = $('chatlog').scrollHeight;
                 break;
                 case 'leave':
                     elem = document.createElement('div');
-                    console.log(msg.nick + ' left chat');
                     elem.appendChild(document.createTextNode(msg.nick + ' left chat'));
                     $('chatlog').appendChild(elem);
                     $('chatlog').scrollTop = $('chatlog').scrollHeight;
                 break;
                 case 'msg':
                     elem = document.createElement('div');
-                    console.log(msg.nick + ': ' + msg.msg);
                     elem.appendChild(document.createTextNode(msg.nick + ': ' + msg.msg));
                     $('chatlog').appendChild(elem);
                     $('chatlog').scrollTop = $('chatlog').scrollHeight;
                 break;
                 case 'chat_info':
                     elem = document.createElement('div');
-                    console.log(msg.msg);
                     elem.appendChild(document.createTextNode(msg.msg));
                     $('chatlog').appendChild(elem);
                     $('chatlog').scrollTop = $('chatlog').scrollHeight;
