@@ -125,9 +125,14 @@ h1 a {
     color: inherit !important;
 }
 
+h1 a img {
+    border: none;
+    vertical-align: bottom;
+}
+
 header button {
     display: block;
     float: left;
-    margin-top: 12px;
+    margin-top: 8px;
     margin-left: 6px;
 }
