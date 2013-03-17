@@ -211,11 +211,10 @@
                     state.current = stream.current;
                     if (state.current !== null) {
                         if (state.playing) {
-                            player.loadVideoById(state.playlist[state.current].id);
+                            player.loadVideoById(state.playlist[state.current].id, stream.time);
                         } else {
-                            player.cueVideoById(state.playlist[state.current].id);
+                            player.cueVideoById(state.playlist[state.current].id, stream.time);
                         }
-                        player.seekTo(stream.time);
                     }
 
                     // if we have control of the stream
