@@ -81,7 +81,7 @@ input {
 
     #playlist {
         width: 240px;
-        height: 410px;
+        height: 350px;
     }
 
     #player {
@@ -98,7 +98,7 @@ input {
 
     #playlist {
         width: 778px;
-        height: 200px;
+        height: 140px;
     }
 
     #player {
@@ -108,7 +108,7 @@ input {
 }
 
 #buttons {
-    height: 60px;
+    height: 90px;
 }
 
 #playlist {

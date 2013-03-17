@@ -283,13 +283,15 @@ wsServer.on('request', function(request) {
                     return;
                 }
                 client.stream.playlist = msg.playlist;
+                client.stream.current = msg.current;
 
                 // update each client
                 clients.forEach(function (cl) {
                     if (cl.stream === client.stream) {
                         sendTo(cl.conn, {
                             type: 'update_playlist',
-                            playlist: msg.playlist
+                            playlist: msg.playlist,
+                            current: msg.current
                         });
                     }
                 });
@@ -346,7 +348,8 @@ wsServer.on('request', function(request) {
                         if (cl.stream === client.stream) {
                             sendTo(cl.conn, {
                                 type: 'update_playlist',
-                                playlist: client.stream.playlist
+                                playlist: client.stream.playlist,
+                                current: client.stream.current
                             });
                         }
                     });

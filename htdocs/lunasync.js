@@ -258,7 +258,7 @@
                         $('rm-button').onclick = function () {
                             var i, items = $('playlist').selectedOptions, oldCurrent, current;
 
-                            oldCurrent, current = state.playlist[state.current];
+                            oldCurrent = current = state.playlist[state.current];
 
                             // remove selected playlist items
                             for (i = 0; i < items.length; i++) {
@@ -280,7 +280,8 @@
                             // (this may create race conditions...)
                             send({
                                 type: 'update_playlist',
-                                playlist: state.playlist
+                                playlist: state.playlist,
+                                current: state.current
                             });
 
                             if (current !== state.playlist[state.current]) {
@@ -315,6 +316,64 @@
                             });
                         };
 
+                        $('move-up-btn').disabled = false;
+                        $('move-up-btn').onclick = function () {
+                            var i, items = $('playlist').selectedOptions, item, current;
+
+                            current = state.playlist[state.current];
+
+                            // move selected playlist items up
+                            for (i = 0; i < items.length; i++) {
+                                if (items[i].dataLSindex - 1 >= 0) {
+                                    item = state.playlist.splice(items[i].dataLSindex, 1);
+                                    state.playlist.splice(items[i].dataLSindex - 1, 0, item[0]);
+                                }
+                            }
+
+                            if (current !== state.playlist[state.current]) {
+                                state.current = state.playlist.indexOf(current);
+                            }
+
+                            updatePlaylist();
+
+                            // push update to server by overwriting playlist
+                            // (this may create race conditions...)
+                            send({
+                                type: 'update_playlist',
+                                playlist: state.playlist,
+                                current: state.current
+                            });
+                        };
+
+                        $('move-down-btn').disabled = false;
+                        $('move-down-btn').onclick = function () {
+                            var i, items = $('playlist').selectedOptions, item, current;
+
+                            current = state.playlist[state.current];
+
+                            // move selected playlist items up
+                            for (i = 0; i < items.length; i++) {
+                                if (items[i].dataLSindex + 1 < state.playlist.length) {
+                                    item = state.playlist.splice(items[i].dataLSindex, 1);
+                                    state.playlist.splice(items[i].dataLSindex + 1, 0, item[0]);
+                                }
+                            }
+
+                            if (current !== state.playlist[state.current]) {
+                                state.current = state.playlist.indexOf(current);
+                            }
+
+                            updatePlaylist();
+
+                            // push update to server by overwriting playlist
+                            // (this may create race conditions...)
+                            send({
+                                type: 'update_playlist',
+                                playlist: state.playlist,
+                                current: state.current
+                            });
+                        };
+
                         $('add-url').disabled = false;
                         $('add-url').onkeypress = function (e) {
                             var videoID;
@@ -340,8 +399,8 @@
                     } else {
                         // only enable re-sync button if not in control
                         // (otherwise is a fairly fruitless exercise)
-                        $('re-sync').disabled = false;
-                        $('re-sync').onclick = function () {
+                        $('re-sync-btn').disabled = false;
+                        $('re-sync-btn').onclick = function () {
                             send({
                                 type: 're_sync'
                             });
@@ -374,6 +433,7 @@
                 break;
                 case 'update_playlist':
                     state.playlist = msg.playlist;
+                    state.current = msg.current;
                     updatePlaylist();
                 break;
                 case 'change_title':
