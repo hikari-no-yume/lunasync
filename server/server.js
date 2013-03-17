@@ -221,7 +221,7 @@ wsServer.on('request', function(request) {
             case 'set_nick':
                 // check if nick is taken
                 for (i = 0; i < clients.length; i++) {
-                    if (clients[i].chat_nick === msg.nick) {
+                    if (clients[i].stream === client.stream && clients[i].chat_nick === msg.nick) {
                         send({
                             type: 'nick_taken',
                             nick: msg.nick
