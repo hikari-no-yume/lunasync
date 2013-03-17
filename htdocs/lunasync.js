@@ -421,6 +421,7 @@
                     } else {
                         $('viewpage').innerHTML = 'Error communicating with server, lost connection:\n' + msg.error;
                     }
+                    errored = true;
                 break;
             }
         };
