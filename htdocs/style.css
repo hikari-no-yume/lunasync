@@ -101,6 +101,7 @@ input {
     height: 440px;
     overflow: auto;
     margin-bottom: 5px;
+    word-wrap: break-word;
 }
 
 #chatbox {
