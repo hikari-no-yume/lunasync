@@ -247,7 +247,6 @@
                     updatePlaylist();
 
                     // display poll
-                    pollVote = msg.poll_vote;
                     updatePoll();
 
                     // cue and play correct video
