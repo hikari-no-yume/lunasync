@@ -420,18 +420,6 @@
                     // make chat work
                     $('login-btn').disabled = false;
                     $('login-btn').onclick = function () {
-                        navigator.id.watch({
-                            loggedInUser: null,
-                            onlogin: function (assertion) {
-                                send({
-                                    type: 'assert',
-                                    assertion: assertion
-                                });
-                                $('login-btn').disabled = true;
-                                $('login-btn').innerHTML = 'logging in...';
-                            },
-                            onlogout: function () {}
-                        });
                         navigator.id.request();
                     };
                     $('chatbox').placeholder = 'choose a nick (press enter)';
@@ -455,6 +443,20 @@
                             return false;
                         }
                     };
+                    navigator.id.watch({
+                        loggedInUser: null,
+                        onlogin: function (assertion) {
+                            if (chatNick === null) {
+                                send({
+                                    type: 'assert',
+                                    assertion: assertion
+                                });
+                                $('login-btn').disabled = true;
+                                $('login-btn').innerHTML = 'logging in...';
+                            }
+                        },
+                        onlogout: function () {}
+                    });
                     window.onresize = scrollChatlog;
                 break;
                 case 'update_playlist':
