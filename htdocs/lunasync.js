@@ -79,6 +79,10 @@
         socket.send(JSON.stringify(msg));
     }
 
+    function scrollChatlog() {
+        $('chatlog').scrollTop = $('chatlog').scrollHeight;
+    }
+
     function initBasic() {
         $('create-new').onclick = function () {
             var title;
@@ -345,6 +349,7 @@
                             return false;
                         }
                     };
+                    window.onresize = scrollChatlog;
                 break;
                 case 'update_playlist':
                     state.playlist = msg.playlist;
@@ -378,25 +383,25 @@
                     elem = document.createElement('div');
                     elem.appendChild(document.createTextNode(msg.nick + ' joined chat'));
                     $('chatlog').appendChild(elem);
-                    $('chatlog').scrollTop = $('chatlog').scrollHeight;
+                    scrollChatlog();
                 break;
                 case 'leave':
                     elem = document.createElement('div');
                     elem.appendChild(document.createTextNode(msg.nick + ' left chat'));
                     $('chatlog').appendChild(elem);
-                    $('chatlog').scrollTop = $('chatlog').scrollHeight;
+                    scrollChatlog();
                 break;
                 case 'msg':
                     elem = document.createElement('div');
                     elem.appendChild(document.createTextNode(msg.nick + ': ' + msg.msg));
                     $('chatlog').appendChild(elem);
-                    $('chatlog').scrollTop = $('chatlog').scrollHeight;
+                    scrollChatlog();
                 break;
                 case 'chat_info':
                     elem = document.createElement('div');
                     elem.appendChild(document.createTextNode(msg.msg));
                     $('chatlog').appendChild(elem);
-                    $('chatlog').scrollTop = $('chatlog').scrollHeight;
+                    scrollChatlog();
                 break;
                 case 'nick_taken':
                     alert('The nick "' + msg.nick + '" ids already taken - choose another one!');
