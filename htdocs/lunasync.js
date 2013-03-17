@@ -178,8 +178,8 @@
                 control: control
             });
         };
-        socket.onerror = function (err) {
-            $('viewpage').innerHTML = 'Error communicating with server, lost connection:\n' + err;
+        socket.onerror = socket.onclose = function (err) {
+            $('viewpage').innerHTML = 'Error communicating with server, lost connection (server may be down, lunasync may have updated, try refreshing):\n' + err;
         };
         socket.onmessage = function (event) {
             var msg, stream, elem;
