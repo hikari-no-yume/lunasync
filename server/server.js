@@ -131,7 +131,7 @@ wsServer.on('request', function(request) {
     }
 
     connection.on('message', function (message) {
-        var msg, i, users;
+        var msg, i, users, nonEmptyStreams;
 
         // handle unexpected packet types
         // we don't use binary frames
@@ -247,16 +247,30 @@ wsServer.on('request', function(request) {
                 });
             break;
             case 'msg':
-                // update each client
-                clients.forEach(function (cl) {
-                    if (cl.stream === client.stream) {
-                        sendTo(cl.conn, {
-                            type: 'msg',
-                            nick: client.chat_nick,
-                            msg: msg.msg
-                        });
-                    }
-                });
+                if (msg.msg === '/stats') {
+                    nonEmptyStreams = [];
+                    clients.forEach(function (cl) {
+                        if (nonEmptyStreams.indexOf(cl.stream) === -1) {
+                            nonEmptyStreams.push(cl.stream);
+                        }
+                    });
+                    send({
+                        type: 'chat_info',
+                        msg: streams.length + ' streams (' + nonEmptyStreams.length + ' active), ' + clients.length + ' users online'
+                    });
+                // normal message
+                } else {
+                    // update each client
+                    clients.forEach(function (cl) {
+                        if (cl.stream === client.stream) {
+                            sendTo(cl.conn, {
+                                type: 'msg',
+                                nick: client.chat_nick,
+                                msg: msg.msg
+                            });
+                        }
+                    });
+                }
             break;
             case 'update_playlist':
                 // check that they have control of stream
