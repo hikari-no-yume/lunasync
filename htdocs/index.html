@@ -41,7 +41,8 @@
             <div id=player></div>
             <div id=chat>
                 <div id=chatlog></div>
-                <input type=text placeholder="loading..." id=chatbox>
+                <button disabled id=login-btn>Login to chat</button>
+                <input type=text placeholder="loading..." id=chatbox class=unloaded>
             </div>
         </div>
     </article>
@@ -68,6 +69,7 @@
   })();
 
 </script>
+<script src="https://login.persona.org/include.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
 <script>
 swfobject.embedSWF("http://www.youtube.com/v/hCVGg1YDGhw?enablejsapi=1&version=3", "player", "788", "480", "8", null, null, {allowScriptAccess: 'always'});

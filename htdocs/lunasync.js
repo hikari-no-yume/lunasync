@@ -217,7 +217,7 @@
             errored = true;
         };
         socket.onmessage = function (event) {
-            var msg, stream, elem;
+            var msg, stream, elem, nick;
 
             msg = JSON.parse(event.data);
 
@@ -418,6 +418,22 @@
                     }
 
                     // make chat work
+                    $('login-btn').disabled = false;
+                    $('login-btn').onclick = function () {
+                        navigator.id.watch({
+                            loggedInUser: null,
+                            onlogin: function (assertion) {
+                                send({
+                                    type: 'assert',
+                                    assertion: assertion
+                                });
+                                $('login-btn').disabled = true;
+                                $('login-btn').innerHTML = 'logging in...';
+                            },
+                            onlogout: function () {}
+                        });
+                        navigator.id.request();
+                    };
                     $('chatbox').placeholder = 'choose a nick (press enter)';
                     $('chatbox').onkeypress = function (e) {
                         // enter
@@ -494,14 +510,36 @@
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
-                case 'nick_taken':
-                    alert('The nick "' + msg.nick + '" ids already taken - choose another one!');
-                    $('chatbox').disabled = false;
-                break;
                 case 'nick_chosen':
                     $('chatbox').placeholder = 'say something (press enter)';
                     chatNick = msg.nick;
                     $('chatbox').disabled = false;
+                    $('login-btn').className = 'unloaded';
+                    $('chatbox').className = '';
+                break;
+                case 'nick_in_use':
+                    alert('The nick "' + msg.nick + '" is in use - log out first.');
+                    $('login-btn').className = 'unloaded';
+                break;
+                case 'choose_nick':
+                    nick = prompt((msg.reason === 'nick_taken' ? 'That nickname was taken. ' : '') + "Choose your nickname (3-18 characters, digits, letters and underscores only):");
+                    if (nick === null) {
+                        $('login-btn').innerHTML = 'Log in';
+                        $('login-btn').disabled = false;
+                        return;
+                    }
+                    while (!nick.match(/^[a-zA-Z0-9_]{3,18}$/g)) {
+                        nick = prompt("That nickname wasn't valid.\nChoose your nickname (3-18 characters, digits, letters and underscores only):");
+                        if (nick === null) {
+                            $('login-btn').innerHTML = 'Log in';
+                            $('login-btn').disabled = false;
+                            return;
+                        }
+                    }
+                    send({
+                        type: 'set_nick',
+                        nick: nick
+                    });
                 break;
                 case 'error':
                     if (msg.error === 'not_found') {

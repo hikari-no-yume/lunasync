@@ -2,14 +2,16 @@
 
 var WebSocketServer = require('websocket').server,
     http = require('http'),
+    https = require('https'),
     url = require('url')
     fs = require('fs'),
     entities = require('entities');
 
 var DEBUG_MODE = process.argv.hasOwnProperty('2') && process.argv[2] === '--debug',
-    DEFAULT_ORIGIN = 'http://lunasync.ajf.me';
+    DEFAULT_ORIGIN = 'http://lunasync.ajf.me',
+    DEBUG_ORIGIN = 'http://localhost:8000';
 
-var streams = [], clients = [];
+var streams = [], clients = [], accountEmails = {}, accounts = {};
 
 function generateSecret() {
     var i, secret = '';
@@ -30,11 +32,26 @@ if (fs.existsSync('streams.json')) {
     streams = data.streams;
 }
 
-function save() {
+if (fs.existsSync('accounts.json')) {
+    var file = fs.readFileSync('accounts.json');
+    var data = JSON.parse(file);
+    accountEmails = data.accountEmails;
+    accounts = data.accounts;
+}
+
+function saveStreams() {
     fs.writeFileSync('streams.json', JSON.stringify({
         streams: streams
     }));
-    console.log('Saved');
+    console.log('Saved streams');
+}
+
+function saveAccounts() {
+    fs.writeFileSync('accounts.json', JSON.stringify({
+        accounts: accounts,
+        accountEmails: accountEmails
+    }));
+    console.log('Saved accounts');
 }
 
 var server = http.createServer(function(request, response) {
@@ -79,7 +96,7 @@ var server = http.createServer(function(request, response) {
                 secret: generateSecret()
             };
             streams.push(stream);
-            save();
+            saveStreams();
             response.writeHead(200, headers);
             response.end(JSON.stringify({
                 stream: stream
@@ -169,7 +186,8 @@ wsServer.on('request', function(request) {
                             stream: stream,
                             control: stream.secret === msg.control,
                             conn: connection,
-                            chat_nick: null
+                            chat_nick: null,
+                            email: null
                         };
                         clients.push(client);
                         send({
@@ -235,22 +253,91 @@ wsServer.on('request', function(request) {
                     playing: stream.playing
                 });
             break;
-            case 'set_nick':
-                // check if nick is taken
-                for (i = 0; i < clients.length; i++) {
-                    if (clients[i].stream === client.stream && clients[i].chat_nick === msg.nick) {
+            case 'assert':
+                personaAssert(msg.assertion, function (res, email) {
+                    var i, account;
+
+                    if (!res) {
                         send({
-                            type: 'nick_taken',
-                            nick: msg.nick
+                            type: 'error',
+                            error: 'bad_persona_assertion'
                         });
-                        return;
+                        connection.close();
+                    } else {
+                        client.email = email;
+                        if (accountEmails.hasOwnProperty(email)) {
+                            account = accounts[accountEmails[email]];
+
+                            // check if nick is taken
+                            for (i = 0; i < clients.length; i++) {
+                                if (clients[i].stream === client.stream && clients[i].chat_nick === account.nick) {
+                                    send({
+                                        type: 'nick_in_use',
+                                        nick: account.nick
+                                    });
+                                    return;
+                                }
+                            }
+
+                            client.chat_nick = account.nick;
+
+                            send({
+                                type: 'nick_chosen',
+                                nick: client.chat_nick
+                            });
+
+                            // update each client
+                            clients.forEach(function (cl) {
+                                if (cl.stream === client.stream) {
+                                    sendTo(cl.conn, {
+                                        type: 'join',
+                                        nick: client.chat_nick
+                                    });
+                                }
+                            });
+                        } else {
+                            send({
+                                type: 'choose_nick'
+                            });
+                        }
                     }
+                });
+            break;
+            case 'set_nick':
+                if (!msg.nick.match(/^[a-zA-Z0-9_]{3,18}$/g)) {
+                    send({
+                        type: 'error',
+                        error: 'bad_nick'
+                    });
+                    connection.close();
+                    return;
                 }
+                if (client.email === null) {
+                    send({
+                        type: 'error',
+                        error: 'not_logged_in'
+                    });
+                    connection.close();
+                    return;
+                }
+                if (accounts.hasOwnProperty(msg.nick.toLowerCase())) {
+                    send({
+                        type: 'choose_nick',
+                        reason: 'nick_taken'
+                    });
+                    return;
+                }
+                accountEmails[client.email] = msg.nick.toLowerCase();
+                accounts[msg.nick.toLowerCase()] = {
+                    email: client.email,
+                    nick: msg.nick
+                };
+                saveAccounts();
                 client.chat_nick = msg.nick;
 
                 send({
                     type: 'nick_chosen',
-                    nick: msg.nick
+                    nick: client.chat_nick
                 });
 
                 // update each client
@@ -258,12 +345,20 @@ wsServer.on('request', function(request) {
                     if (cl.stream === client.stream) {
                         sendTo(cl.conn, {
                             type: 'join',
-                            nick: msg.nick
+                            nick: client.chat_nick
                         });
                     }
                 });
             break;
             case 'msg':
+                if (client.chat_nick === null) {
+                    send({
+                        type: 'error',
+                        error: 'not_in_chat'
+                    });
+                    connection.close();
+                    return;
+                }
                 if (msg.msg === '/stats') {
                     nonEmptyStreams = [];
                     clients.forEach(function (cl) {
@@ -312,7 +407,7 @@ wsServer.on('request', function(request) {
                         });
                     }
                 });
-                save();
+                saveStreams();
             break;
             case 'change_title':
                 // check that they have control of stream
@@ -335,7 +430,7 @@ wsServer.on('request', function(request) {
                         });
                     }
                 });
-                save();
+                saveStreams();
             break;
             case 'add_url':
                 // check that they have control of stream
@@ -370,7 +465,7 @@ wsServer.on('request', function(request) {
                             });
                         }
                     });
-                    save();
+                    saveStreams();
                 });
             break;
             case 'play':
@@ -525,3 +620,40 @@ function getVideoTitle(id, callback) {
         callback(false);
     });
 }
+
+function personaAssert (assertion, callback) {
+    var postdata;
+
+    if (DEBUG_MODE) {
+        postdata = 'assertion=' + assertion + '&audience=' + DEBUG_ORIGIN;
+    } else {
+        postdata = 'assertion=' + assertion + '&audience=' + DEFAULT_ORIGIN;
+    }
+
+    var req = https.request({
+        hostname: 'verifier.login.persona.org',
+        method: 'POST',
+        path: '/verify',
+        headers: {
+            'Content-Length': postdata.length,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }, function (res) {
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            var data = JSON.parse(chunk);
+            if (data.status === 'okay') {
+                callback(true, data.email);
+                return;
+            }
+            callback(false);
+        });
+    });
+
+    req.on('error', function (e) {
+        callback(false);
+    });
+
+    req.write(postdata);
+    req.end();
+};
