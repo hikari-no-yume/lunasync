@@ -45,8 +45,14 @@
         } else if (window.location.pathname[0] === '/') {
             mode = 'view';
             id = window.location.pathname.substr(1);
+            // get secret from URL
             if (window.location.search.substr(0, 9) === '?control=') {
                 control = window.location.search.substr(9);
+            // get secret from localStorage if we had it backed up and redirect
+            } else if (localStorage.getItem('secret-' + id) !== null) {
+                control = localStorage.getItem('secret-' + id);
+                window.location = '/' + id + '?control=' + control;
+                return;
             }
             initView(id, control);
         } else {
@@ -93,6 +99,8 @@
             doAJAX('POST', '/new', {
                 title: title
             }, function (response) {
+                // back up the secret
+                localStorage.setItem('secret-' + response.stream.id, response.stream.secret);
                 window.location = '/' + response.stream.id + '?control=' + response.stream.secret;
             }, function (xhr) {
                 alert('Error while trying to create new sync:\nResponse code:\n' + xhr.status + '\nError message:' + xhr.responseText);
