@@ -3,7 +3,8 @@
 var WebSocketServer = require('websocket').server,
     http = require('http'),
     url = require('url')
-    fs = require('fs');
+    fs = require('fs'),
+    entities = require('entities');
 
 var DEBUG_MODE = process.argv.hasOwnProperty('2') && process.argv[2] === '--debug',
     DEFAULT_ORIGIN = 'http://lunasync.ajf.me';
@@ -451,7 +452,10 @@ function getVideoTitle(id, callback) {
             if (pos !== -1) {
                 pos2 = data.indexOf('</title>', pos);
                 if (pos2 !== -1) {
-                    callback(data.substr(pos + 7, pos2 - (pos + 7)));
+                    title = data.substr(pos + 7, pos2 - (pos + 7));
+                    // decode HTML entities
+                    title = entities.decode(title, 2);
+                    callback(title);
                 } else {
                     callback(false);
                 }
