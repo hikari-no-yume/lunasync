@@ -198,6 +198,7 @@
 
                     // display stream title
                     $('title').value = stream.title;
+                    document.title = stream.title + ' - lunasync';
 
                     // display stream viewing URL
                     $('view-link').value = SITE_URL + '/' + stream.id;
@@ -232,6 +233,7 @@
                                 type: 'change_title',
                                 title: $('title').value
                             });
+                            document.title = $('title').value + ' - lunasync';
                         };
 
                         // unhide control box
@@ -355,6 +357,7 @@
                 break;
                 case 'change_title':
                     $('title').value = msg.title;
+                    document.title = msg.title + ' - lunasync';
                 break;
                 case 'cue':
                     state.playing = true;
@@ -417,6 +420,7 @@
                 break;
                 case 'error':
                     if (msg.error === 'not_found') {
+                        document.title = 'stream not found - lunasync';
                         $('viewpage').innerHTML = 'Error: no such stream exists. Did you copy the URL correctly?';
                     } else {
                         $('viewpage').innerHTML = 'Error communicating with server, lost connection:\n' + msg.error;
@@ -429,6 +433,7 @@
 
     // "404" page
     function init404() {
+        document.title = '404 not found - lunasync';
         // unhide 404 page
         $('page404').className = '';
     }
