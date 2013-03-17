@@ -84,7 +84,7 @@
         $('create-new').onclick = function () {
             var title;
 
-            title = prompt('Enter a title:', '');
+            title = prompt('Enter a title:', '') || 'My Stream';
             doAJAX('POST', '/new', {
                 title: title
             }, function (response) {
