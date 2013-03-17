@@ -103,7 +103,7 @@ wsServer = new WebSocketServer({
 wsServer.on('request', function(request) {
     var client = null;
 
-    if (!DEBUG_MODE && origin !== DEFAULT_ORIGIN) {
+    if (!DEBUG_MODE && request.origin !== DEFAULT_ORIGIN) {
         request.reject();
         console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
         return;
