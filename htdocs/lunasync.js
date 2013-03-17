@@ -247,15 +247,15 @@
                             // remove selected playlist items
                             for (i = 0; i < items.length; i++) {
                                 // if currently playing video being deleted, switch to next
-                                if (state.playlist[items[i].index] === current) {
+                                if (state.playlist[items[i].dataLSindex] === current) {
                                     // loop around
-                                    if (items[i].index + 1 < state.playlist.length) {
-                                        current = state.playlist[items[i].index + 1];
+                                    if (items[i].dataLSindex + 1 < state.playlist.length) {
+                                        current = state.playlist[items[i].dataLSindex + 1];
                                     } else {
                                         current = state.playlist[0];
                                     }
                                 }
-                                state.playlist.splice(items[i].index, 1);
+                                state.playlist.splice(items[i].dataLSindex, 1);
                             }
 
                             updatePlaylist();
@@ -290,7 +290,7 @@
                             if ($('playlist').selectedOptions.length === 0) {
                                 cueIndex = 0;
                             } else {
-                                cueIndex = $('playlist').selectedOptions[0].index;
+                                cueIndex = $('playlist').selectedOptions[0].dataLSindex;
                             }
 
                             send({
@@ -438,7 +438,7 @@
                 option.className = 'now-playing';
             }
             option.appendChild(document.createTextNode(state.playlist[i].title));
-            option.index = i;
+            option.dataLSindex = i;
             $('playlist').appendChild(option);
         }
     }
