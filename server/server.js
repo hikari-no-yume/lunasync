@@ -84,6 +84,9 @@ var server = http.createServer(function(request, response) {
                 stream: stream
             }));
         });
+    } else if (parts.pathname === '/new' && request.method === 'OPTIONS') {
+        response.writeHead(200, headers);
+        response.end();
     } else {
         response.writeHead(404, headers);
         response.end(JSON.stringify({
