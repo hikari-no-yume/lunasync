@@ -395,6 +395,13 @@
                     $('chatlog').appendChild(elem);
                     $('chatlog').scrollTop = $('chatlog').scrollHeight;
                 break;
+                case 'chat_info':
+                    elem = document.createElement('div');
+                    console.log(msg.msg);
+                    elem.appendChild(document.createTextNode(msg.msg));
+                    $('chatlog').appendChild(elem);
+                    $('chatlog').scrollTop = $('chatlog').scrollHeight;
+                break;
                 case 'nick_taken':
                     alert('The nick "' + msg.nick + '" ids already taken - choose another one!');
                     $('chatbox').disabled = false;

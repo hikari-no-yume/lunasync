@@ -127,7 +127,7 @@ wsServer.on('request', function(request) {
     }
 
     connection.on('message', function (message) {
-        var msg, i;
+        var msg, i, users;
 
         // handle unexpected packet types
         // we don't use binary frames
@@ -181,6 +181,16 @@ wsServer.on('request', function(request) {
                                 playlist: stream.playlist
                             },
                             control: stream.secret === msg.control
+                        });
+                        users = [];
+                        clients.forEach(function (cl) {
+                            if (cl.stream === client.stream && cl.chat_nick !== null) {
+                                users.push(cl.chat_nick);
+                            }
+                        });
+                        send({
+                            type: 'chat_info',
+                            msg: users.length + ' users in chat: ' + users.join(', ')
                         });
                     } else {
                         send({
