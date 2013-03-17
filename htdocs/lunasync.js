@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var API_SERVER = 'localhost:9000',
+    var API_SERVER = window.location.hostname + ':9000',
         SITE_URL = 'http://lunasync.ajf.me';
 
     var mode, socket, player;
