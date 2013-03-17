@@ -53,5 +53,10 @@
 </div>
 <noscript>lunasync requires JavaScript support to function. Please enable JavaScript (if you have disabled it), disable or create exceptions for any script/ad blockers or use a browser that supports JavaScript, where applicable.</noscript>
 
-<script src="//www.youtube.com/iframe_api"></script>
+<script>
+var tag = document.createElement('script');
+tag.src = "//www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+</script>
 <script src=lunasync.js></script>
