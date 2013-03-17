@@ -99,17 +99,33 @@ input {
     margin-left: 5px;
 }
 
-#chat {
-    float: left;
-    margin-left: 5px;
-    width: 250px;
-    height: 480px;
+@media screen and (min-width: 1318px) {
+    #chat {
+        float: left;
+        margin-left: 5px;
+        width: 250px;
+        height: 480px;
+    }
+    #chatlog {
+        height: 440px;
+        overflow: auto;
+        margin-bottom: 5px;
+        word-wrap: break-word;
+    }
 }
-#chatlog {
-    height: 440px;
-    overflow: auto;
-    margin-bottom: 5px;
-    word-wrap: break-word;
+@media screen and (max-width: 1317px) {
+    #chat {
+        clear: both;
+        margin-top: 5px;
+        width: 1043px;
+        height: 240px;
+    }
+    #chatlog {
+        height: 200px;
+        overflow: auto;
+        margin-bottom: 5px;
+        word-wrap: break-word;
+    }
 }
 
 #chatbox {
