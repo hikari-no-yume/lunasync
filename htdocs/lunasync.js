@@ -133,6 +133,22 @@
         }
     }
 
+    // selectedOptions support emulation for Firefox
+    function selectedOptions(select) {
+        var list = [], i;
+
+        if (select.hasOwnProperty('selectedOptions')) {
+            return select.selectedOptions;
+        } else {
+            for (i = 0; i < select.options.length; i++) {
+                if (select.options[i].selected) {
+                    list.push(select.options[i]);
+                }
+            }
+            return list;
+        }
+    }
+
     function initRestView(id, control) {
         var url;
 
@@ -258,7 +274,7 @@
                         // enable stream controls
                         $('rm-button').disabled = false;
                         $('rm-button').onclick = function () {
-                            var i, items = $('playlist').selectedOptions, oldCurrent, current;
+                            var i, items = selectedOptions($('playlist')), oldCurrent, current;
 
                             oldCurrent = current = state.playlist[state.current];
 
@@ -306,10 +322,10 @@
                         $('play-button').onclick = $('playlist').ondblclick = function () {
                             var cueIndex;
 
-                            if ($('playlist').selectedOptions.length === 0) {
+                            if (selectedOptions($('playlist')).length === 0) {
                                 cueIndex = 0;
                             } else {
-                                cueIndex = $('playlist').selectedOptions[0].dataLSindex;
+                                cueIndex = selectedOptions($('playlist'))[0].dataLSindex;
                             }
 
                             send({
@@ -320,7 +336,7 @@
 
                         $('move-up-btn').disabled = false;
                         $('move-up-btn').onclick = function () {
-                            var i, items = $('playlist').selectedOptions, item, current;
+                            var i, items = selectedOptions($('playlist')), item, current;
 
                             current = state.playlist[state.current];
 
@@ -349,7 +365,7 @@
 
                         $('move-down-btn').disabled = false;
                         $('move-down-btn').onclick = function () {
-                            var i, items = $('playlist').selectedOptions, item, current;
+                            var i, items = selectedOptions($('playlist')), item, current;
 
                             current = state.playlist[state.current];
 
