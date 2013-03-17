@@ -212,6 +212,7 @@ wsServer.on('request', function(request) {
                                 });
                             }
                         });
+                        console.log('now ' + users + ' users viewing stream ' + client.stream.id);
                     } else {
                         send({
                             type: 'error',
@@ -485,6 +486,7 @@ wsServer.on('request', function(request) {
                     });
                 }
             });
+            console.log('now ' + users + ' users viewing stream ' + client.stream.id);
         }
     });
 });
