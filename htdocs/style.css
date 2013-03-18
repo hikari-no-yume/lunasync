@@ -88,6 +88,10 @@ input {
         float: left;
         margin-left: 5px;
     }
+
+    #buttons {
+        height: 90px;
+    }
 }
 @media screen and (max-width: 1062px) {
     #playlist-holder {
@@ -98,17 +102,17 @@ input {
 
     #playlist {
         width: 778px;
-        height: 140px;
+        height: 200px;
     }
 
     #player {
         clear: both;
         margin-top: 5px;
     }
-}
 
-#buttons {
-    height: 90px;
+    #buttons {
+        height: 60px;
+    }
 }
 
 #playlist {
