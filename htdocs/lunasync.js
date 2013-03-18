@@ -515,9 +515,7 @@
                 break;
                 case 'poll':
                     state.poll = msg.poll;
-                    if (msg.fresh) {
-                        pollVote = null;
-                    }
+                    pollVote = msg.poll_vote;
                     updatePoll();
                 break;
                 case 'msg':
@@ -635,7 +633,7 @@
                     } else {
                         option.appendChild(document.createTextNode((pollVote === name ? '▶ ' : '') + name));
                     }
-                    option.appendChild(document.createTextNode(' (' + poll.options[name] + ' votes)'));
+                    option.appendChild(document.createTextNode(' (' + poll.options[name].length + ' votes - ' + poll.options[name].join(', ') + ')'));
                     elem.appendChild(option);
                 }
             }
