@@ -114,12 +114,12 @@ _Stream.prototype.onJoinChat = function (client) {
                 client.poll_vote = option;
             }
         });
+        client.send({
+            type: 'poll',
+            poll: this.getPoll(),
+            poll_vote: client.poll_vote
+        });
     }
-    client.send({
-        type: 'poll',
-        poll: this.getPoll(),
-        poll_vote: client.poll_vote
-    });
 };
 
 // adds client to internal list
