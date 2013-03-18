@@ -28,11 +28,20 @@ a:visited {
     color: #ccc;
 }
 
+ul {
+    margin: 5px;
+    padding-left: 15px;
+}
+
+li {
+    list-style-type: square;
+}
+
 .unloaded {
     display: none;
 }
 
-header, article, #meta, #viewer, #playlist-holder, #chat, #chatlog, #poll, footer {
+header, article, #meta, #viewer, #playlist-holder, #chat, #chatlog, #users-online, #poll, footer {
     background-color: rgba(0, 0, 0, 0.2);
     padding: 5px;
 }
@@ -125,6 +134,15 @@ input {
     background-color: rgba(255, 127, 0, 0.5);
 }
 
+#chatlog, #users-online {
+    overflow: auto;
+    word-wrap: break-word;
+}
+
+#chat-buttons {
+    clear: both;
+}
+
 @media screen and (min-width: 1318px) {
     #chat {
         float: left;
@@ -133,10 +151,13 @@ input {
         height: 480px;
     }
     #chatlog {
-        height: 410px;
-        overflow: auto;
+        height: 310px;
         margin-bottom: 5px;
-        word-wrap: break-word;
+        margin-bottom: 5px;
+    }
+    #users-online {
+        height: 100px;
+        margin-bottom: 5px;
     }
 }
 @media screen and (min-width: 1063px) and (max-width: 1317px) {
@@ -145,12 +166,17 @@ input {
         margin-top: 5px;
         width: 1043px;
         height: 240px;
+        overflow: hidden;
     }
     #chatlog {
-        height: 170px;
-        overflow: auto;
-        margin-bottom: 5px;
-        word-wrap: break-word;
+        height: 190px;
+        width: 850px;
+        float: left;
+    }
+    #users-online {
+        height: 190px;
+        width: 170px;
+        float: right;
     }
 }
 @media screen and (max-width: 1062px) {
@@ -161,10 +187,14 @@ input {
         height: 240px;
     }
     #chatlog {
-        height: 200px;
-        overflow: auto;
-        margin-bottom: 5px;
-        word-wrap: break-word;
+        height: 190px;
+        width: 600px;
+        float: left;
+    }
+    #users-online {
+        height: 190px;
+        width: 170px;
+        float: right;
     }
 }
 

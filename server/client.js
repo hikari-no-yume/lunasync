@@ -114,8 +114,8 @@ function greet (client) {
         }
     });
     client.send({
-        type: 'chat_info',
-        msg: users.length + ' users in chat: ' + users.join(', ')
+        type: 'chat_users',
+        users: users
     });
 
     // inform of commands
@@ -478,7 +478,8 @@ function Client (conn, stream, secret) {
             current: stream.current,
             time: stream.getRelativeTime(),
             playlist: stream.playlist,
-            poll: (stream.hasPoll() ? stream.getPoll() : null)
+            poll: (stream.hasPoll() ? stream.getPoll() : null),
+            viewers: stream.clientsViewing()
         },
         control: this.control
     });

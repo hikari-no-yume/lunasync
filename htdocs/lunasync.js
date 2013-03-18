@@ -10,7 +10,9 @@
         playing: false,
         current: null,
         playlist: [],
-        poll: null
+        poll: null,
+        users: [],
+        viewers: 0
     }, haveControl = false, pollVote = null, chatNick = null;
 
     function $(id) {
@@ -242,12 +244,16 @@
                     state.current = stream.current;
                     state.playlist = stream.playlist;
                     state.poll = stream.poll;
+                    state.viewers = stream.viewers;
 
                     // display playlist
                     updatePlaylist();
 
                     // display poll
                     updatePoll();
+
+                    // display user count
+                    updateUsersOnline();
 
                     // cue and play correct video
                     state.playing = stream.playing;
@@ -505,6 +511,9 @@
                     elem.appendChild(document.createTextNode('* ' + msg.nick + ' joined chat'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
+                    state.users.push(msg.nick);
+                    state.users.sort();
+                    updateUsersOnline();
                 break;
                 case 'leave':
                     elem = document.createElement('div');
@@ -512,11 +521,25 @@
                     elem.appendChild(document.createTextNode('* ' + msg.nick + ' left chat'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
+                    if (state.users.indexOf(msg.nick) !== -1) {
+                        state.users.splice(state.users.indexOf(msg.nick), 1);
+                        state.users.sort();
+                        updateUsersOnline();
+                    }
                 break;
                 case 'poll':
                     state.poll = msg.poll;
                     pollVote = msg.poll_vote;
                     updatePoll();
+                break;
+                case 'chat_users':
+                    state.users = msg.users;
+                    state.users.sort();
+                    updateUsersOnline();
+                break;
+                case 'viewers':
+                    state.viewers = msg.count;
+                    updateUsersOnline();
                 break;
                 case 'msg':
                     elem = document.createElement('div');
@@ -612,6 +635,20 @@
             option.dataLSindex = i;
             $('playlist').appendChild(option);
         }
+    }
+
+
+    function updateUsersOnline() {
+        var i, elem, option;
+
+        $('users-online').innerHTML = state.users.length + '/' + state.viewers + ' viewers in chat:';
+        elem = document.createElement('ul');
+        for (i = 0; i < state.users.length; i++) {
+            option = document.createElement('li');
+            option.appendChild(document.createTextNode(state.users[i]));
+            elem.appendChild(option);
+        }
+        $('users-online').appendChild(elem);
     }
 
     function updatePoll() {

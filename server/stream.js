@@ -136,8 +136,8 @@ _Stream.prototype.addClient = function (client) {
     // count users viewing stream
     this.forEachClient(function (cl) {
         cl.send({
-            type: 'chat_info',
-            msg: 'now ' + that.usersViewing() + ' users viewing stream'
+            type: 'viewers',
+            count: that.usersViewing()
         });
     });
     console.log('now ' + this.usersViewing() + ' users viewing stream ' + this.id);
@@ -156,8 +156,8 @@ _Stream.prototype.removeClient = function (client) {
     // count users viewing stream
     this.forEachClient(function (cl) {
         cl.send({
-            type: 'chat_info',
-            msg: 'now ' + that.usersViewing() + ' users viewing stream'
+            type: 'viewers',
+            count: that.usersViewing()
         });
     });
     console.log('now ' + this.usersViewing() + ' users viewing stream ' + this.id);
