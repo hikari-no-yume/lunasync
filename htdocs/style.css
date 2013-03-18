@@ -184,6 +184,10 @@ input {
     color: maroon;
 }
 
+.chat-update {
+    color: orange;
+}
+
 #poll {
     margin-top: 5px;
 }

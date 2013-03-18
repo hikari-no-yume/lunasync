@@ -3,6 +3,7 @@
     "version": "0.0.0",
     "dependencies": {
         "websocket": "latest",
+        "keypress": "0.1.0",
         "entities": "https://github.com/FB55/node-entities/tarball/master"
     }
 }

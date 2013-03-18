@@ -311,6 +311,7 @@ _Stream.prototype.updatePlaylist = function (playlist, current) {
             current: current
         });
     });
+
     saveStreams();
 };
 
@@ -325,6 +326,7 @@ _Stream.prototype.changeTitle = function (title) {
             title: title
         });
     });
+
     saveStreams();
 };
 
@@ -353,6 +355,7 @@ _Stream.prototype.addVideo = function (id) {
                 current: that.current
             });
         });
+
         saveStreams();
     });
 };
@@ -372,6 +375,8 @@ _Stream.prototype.play = function (time, origin) {
             });
         }
     });
+
+    saveStreams();
 };
 
 // stop current video
@@ -407,6 +412,8 @@ _Stream.prototype.cue = function (newVideo) {
             current: newVideo
         });
     });
+
+    saveStreams();
 };
 
 // public Stream constructor (new stream)

@@ -520,4 +520,14 @@ Client.clientsConnected = function () {
     return clients.length;
 };
 
+// disconnect all clients and send update messages
+Client.update = function () {
+    clients.forEach(function (client) {
+        client.send({
+            type: 'update'
+        });
+        client.conn.close();
+    });
+};
+
 module.exports = Client;

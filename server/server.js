@@ -127,3 +127,22 @@ wsServer.on('request', function(request) {
         client = new Client(connection, Stream.get(msg.id), msg.control);
     });
 });
+
+var keypress = require('keypress');
+
+keypress(process.stdin);
+
+process.stdin.on('keypress', function (chunk, key) {
+    if (key && key.name === 'u') {
+        // kick for update
+        Client.update();
+        wsServer.shutDown();
+        console.log('Gracefully shut down server with 5s update-refresh message sent. Exiting.');
+        process.exit();
+    } else if (key && key.ctrl && key.name === 'c') {
+        process.exit();
+    }
+});
+
+process.stdin.setRawMode(true);
+process.stdin.resume();

@@ -567,6 +567,17 @@
                         nick: nick
                     });
                 break;
+                case 'update':
+                    elem = document.createElement('div');
+                    elem.className = 'chat-update';
+                    elem.appendChild(document.createTextNode('* lunasync is updating, page will refresh in 5 seconds'));
+                    $('chatlog').appendChild(elem);
+                    scrollChatlog();
+                    errored = true;
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 5000);
+                break;
                 case 'error':
                     if (msg.error === 'not_found') {
                         document.title = 'stream not found - lunasync';
