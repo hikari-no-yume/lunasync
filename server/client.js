@@ -499,6 +499,8 @@ Client.prototype.send = function (msg) {
 
 // clear up
 Client.prototype.destroy = function () {
+    var that = this;
+
     // stop tracking client
     clients.splice(clients.indexOf(this), 1);
 
@@ -507,7 +509,7 @@ Client.prototype.destroy = function () {
         this.stream.forEachClient(function (cl) {
             cl.send({
                 type: 'leave',
-                nick: this.chat_nick
+                nick: that.chat_nick
             });
         });
     }
