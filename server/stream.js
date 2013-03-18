@@ -96,6 +96,7 @@ _Stream.prototype.toJSON = function () {
         id: this.id,
         secret: this.secret,
         playing: this.playing,
+        current: this.current,
         time: this.time,
         playlist: this.playlist,
         timeFrom: this.timeFrom,
