@@ -262,7 +262,7 @@ function hookEvents (client) {
                     client.conn.close();
                     return;
                 }
-                if (accounts.haveNick(msg.nick)) {
+                if (Accounts.haveNick(msg.nick)) {
                     client.send({
                         type: 'choose_nick',
                         reason: 'nick_taken'
