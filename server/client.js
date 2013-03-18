@@ -304,14 +304,14 @@ function hookEvents (client) {
                     if (!commandExists(cmd.name)) {
                         client.send({
                             type: 'chat_info',
-                            msg: 'There is no command named ' + msg
+                            msg: 'There is no command named ' + cmd.name
                         });
                         return;
                     }
                     if (!canUseCommand(client, cmd.name)) {
                         client.send({
                             type: 'chat_info',
-                            msg: 'Only controllers can use the command named ' + msg
+                            msg: 'Only controllers can use the command named ' + cmd.name
                         });
                         return;
                     }
