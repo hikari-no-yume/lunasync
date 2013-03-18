@@ -81,7 +81,7 @@ function _Stream(obj) {
     this.id = obj.id;
     this.secret = obj.secret;
     this.playing = obj.playing || false;
-    this.current = obj.current || null;
+    this.current = ((obj.current === 0) ? 0 : (obj.current || null));
     this.time = obj.time || null;
     this.playlist = obj.playlist || [];
     this.timeFrom = obj.timeFrom || secs();
