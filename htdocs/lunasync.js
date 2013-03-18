@@ -512,7 +512,6 @@
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                     state.users.push(msg.nick);
-                    state.users.sort();
                     updateUsersOnline();
                 break;
                 case 'leave':
@@ -523,7 +522,6 @@
                     scrollChatlog();
                     if (state.users.indexOf(msg.nick) !== -1) {
                         state.users.splice(state.users.indexOf(msg.nick), 1);
-                        state.users.sort();
                         updateUsersOnline();
                     }
                 break;
@@ -534,7 +532,6 @@
                 break;
                 case 'chat_users':
                     state.users = msg.users;
-                    state.users.sort();
                     updateUsersOnline();
                 break;
                 case 'viewers':
@@ -641,6 +638,17 @@
     function updateUsersOnline() {
         var i, elem, option;
 
+        // sort list first
+        state.users.sort(function (a, b) {
+            a = a.toLowerCase();
+            b = b.toLowerCase();
+            if (a < b) {
+                return -1;
+            } else if (a > b) {
+                return 1;
+            }
+            return 0;
+        });
         $('users-online').innerHTML = state.users.length + '/' + state.viewers + ' viewers in chat:';
         elem = document.createElement('ul');
         for (i = 0; i < state.users.length; i++) {
