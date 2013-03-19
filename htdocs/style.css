@@ -218,6 +218,10 @@ input {
     color: orange;
 }
 
+.chat-nick {
+    font-weight: bold;
+}
+
 #poll {
     margin-top: 5px;
 }

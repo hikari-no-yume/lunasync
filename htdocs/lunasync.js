@@ -224,7 +224,7 @@
             errored = true;
         };
         socket.onmessage = function (event) {
-            var msg, stream, elem, nick;
+            var msg, stream, elem, elem2, nick;
 
             msg = JSON.parse(event.data);
 
@@ -540,7 +540,11 @@
                 break;
                 case 'msg':
                     elem = document.createElement('div');
-                    elem.appendChild(document.createTextNode(msg.nick + ': ' + msg.msg));
+                    elem2 = document.createElement('span');
+                    elem2.className = 'chat-nick';
+                    elem2.appendChild(document.createTextNode(msg.nick));
+                    elem.appendChild(elem2);
+                    elem.appendChild(document.createTextNode(': ' + msg.msg));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
