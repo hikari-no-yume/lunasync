@@ -137,8 +137,15 @@ function greet (client) {
 
 // hook client events
 function hookEvents (client) {
+    var connected = true;
+
     client.conn.on('message', function (message) {
         var msg, i, users, nonEmptyStreams, args, results, name, cmd;
+
+        // prevent handling messages after disconnection
+        if (!connected) {
+            return;
+        }
 
         // handle unexpected packet types
         // we don't use binary frames
@@ -452,6 +459,11 @@ function hookEvents (client) {
         }
     });
     client.conn.on('close', function () {
+        // prevent handling event after disconnection
+        if (!connected) {
+            return;
+        }
+        connected = false;
         client.destroy();
     });
 }
