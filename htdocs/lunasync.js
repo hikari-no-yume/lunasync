@@ -90,6 +90,34 @@
         }
     }
 
+    function appendText(parent, text) {
+        parent.appendChild(document.createTextNode(text));
+    }
+
+    function appendTextAutoLink(parent, text) {
+        var pos;
+        while (((pos = text.indexOf('http://')) !== -1) || ((pos = text.indexOf('https://')) !== -1)) {
+            var pos2 = text.indexOf(' ', pos);
+            var anchor = document.createElement('a');
+            anchor.className = 'chat-link';
+            anchor.target = '_blank';
+            if (pos2 === -1) {
+                appendText(parent, text.substr(0, pos));
+                anchor.href = text.substr(pos);
+                appendText(anchor, text.substr(pos));
+
+                text = '';
+            } else {
+                appendText(parent, text.substr(0, pos));
+                anchor.href = text.substr(pos, pos2 - pos);
+                appendText(anchor, text.substr(pos, pos2 - pos));
+                text = text.substr(pos2);
+            }
+            parent.appendChild(anchor);
+        }
+        appendText(parent, text);
+    }
+
     function send(msg) {
         socket.send(JSON.stringify(msg));
     }
@@ -544,7 +572,8 @@
                     elem2.className = 'chat-nick';
                     elem2.appendChild(document.createTextNode(msg.nick));
                     elem.appendChild(elem2);
-                    elem.appendChild(document.createTextNode(': ' + msg.msg));
+                    elem.appendChild(document.createTextNode(': '));
+                    appendTextAutoLink(elem, msg.msg);
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
