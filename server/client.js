@@ -27,7 +27,7 @@ var availableCommands = {
             if (args.length > 2) {
                 client.stream.openPoll(args[0], args.slice(1));
             } else {
-                send({
+                client.send({
                     type: 'chat_info',
                     msg: '/poll needs at least 2 options (e.g. /poll Best Pony,Twilight,Rainbow Dash'
                 });
