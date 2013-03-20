@@ -115,7 +115,7 @@ wsServer.on('request', function(request) {
 
         // check for id
         if (!Stream.haveStream(msg.id)) {
-            client.send({
+            connection.sendUTF(JSON.stringify({
                 type: 'error',
                 error: 'not_found'
             });
