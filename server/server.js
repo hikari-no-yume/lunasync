@@ -118,7 +118,7 @@ wsServer.on('request', function(request) {
             connection.sendUTF(JSON.stringify({
                 type: 'error',
                 error: 'not_found'
-            });
+            }));
             connection.close();
         }
 
