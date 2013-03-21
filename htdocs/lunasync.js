@@ -378,7 +378,7 @@
                         };
 
                         $('move-up-btn').disabled = false;
-                        $('move-up-btn').onclick = function () {
+                        $('move-up-btn').onclick = function (e) {
                             var i, items = selectedOptions($('playlist')), item;
 
                             // move selected playlist items up
@@ -389,7 +389,7 @@
                                     if (state.current === items[i].dataLSindex) {
                                         state.current--;
                                     }
-                                    updatePlaylist();
+                                    updatePlaylist(items[i].index - 1);
                                 }
                             }
 
@@ -400,10 +400,14 @@
                                 playlist: state.playlist,
                                 current: state.current
                             });
+
+                            // prevent change of focus
+                            e.preventDefault();
+                            return false;
                         };
 
                         $('move-down-btn').disabled = false;
-                        $('move-down-btn').onclick = function () {
+                        $('move-down-btn').onclick = function (e) {
                             var i, items = selectedOptions($('playlist')), item;
 
                             // move selected playlist items up
@@ -414,7 +418,7 @@
                                     if (state.current === items[i].dataLSindex) {
                                         state.current++;
                                     }
-                                    updatePlaylist();
+                                    updatePlaylist(items[i].index + 1);
                                 }
                             }
 
@@ -425,6 +429,10 @@
                                 playlist: state.playlist,
                                 current: state.current
                             });
+
+                            // prevent change of focus
+                            e.preventDefault();
+                            return false;
                         };
 
                         $('add-url').disabled = false;
@@ -507,7 +515,7 @@
                 case 'update_playlist':
                     state.playlist = msg.playlist;
                     state.current = msg.current;
-                    updatePlaylist();
+                    updatePlaylist($('playlist').selectedIndex);
                 break;
                 case 'change_title':
                     $('title').value = msg.title;
@@ -651,7 +659,7 @@
         $('page404').className = '';
     }
 
-    function updatePlaylist() {
+    function updatePlaylist(selectedIndex) {
         var i, option;
 
         $('playlist').innerHTML = '';
@@ -664,6 +672,10 @@
             option.appendChild(document.createTextNode(state.playlist[i].title));
             option.dataLSindex = i;
             $('playlist').appendChild(option);
+        }
+
+        if (selectedIndex !== undefined) {
+            $('playlist').selectedIndex = selectedIndex;
         }
     }
 
