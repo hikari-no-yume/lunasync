@@ -269,7 +269,7 @@ function hookEvents (client) {
                     client.conn.close();
                     return;
                 }
-                if (Accounts.haveEmail(client.email) {
+                if (Accounts.haveEmail(client.email)) {
                     client.send({
                         type: 'error',
                         error: 'already_have_nick_for_email'
