@@ -99,7 +99,7 @@ input[type=text] {
     }
 
     #buttons {
-        height: 90px;
+        height: 120px;
     }
 }
 @media screen and (max-width: 1062px) {
@@ -195,6 +195,9 @@ input[type=text] {
         height: 190px;
         width: 170px;
         float: right;
+    }
+    #video-count {
+        display: inline-block;
     }
 }
 

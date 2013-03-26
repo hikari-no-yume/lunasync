@@ -694,6 +694,9 @@
             $('playlist').appendChild(option);
         }
 
+        $('video-count').innerHTML = '';
+        $('video-count').appendChild(document.createTextNode('(' + state.playlist.length + ' videos)'));
+
         if (selectedIndex !== undefined) {
             $('playlist').selectedIndex = selectedIndex;
         }
