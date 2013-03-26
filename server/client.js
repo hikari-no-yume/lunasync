@@ -110,7 +110,7 @@ function greet (client) {
     users = [];
     client.stream.forEachClient(function (cl) {
         if (cl.chat_nick !== null) {
-            users.push(cl.chat_nick);
+            users.push((cl.control ? '@' : '') + cl.chat_nick);
         }
     });
     client.send({
@@ -241,7 +241,7 @@ function hookEvents (client) {
                             client.stream.forEachClient(function (cl) {
                                 cl.send({
                                     type: 'join',
-                                    nick: client.chat_nick
+                                    nick: (client.control ? '@' : '') + client.chat_nick
                                 });
                             });
                         } else {
@@ -543,7 +543,7 @@ Client.prototype.destroy = function () {
         this.stream.forEachClient(function (cl) {
             cl.send({
                 type: 'leave',
-                nick: that.chat_nick
+                nick: (that.control ? '@' : '') + that.chat_nick
             });
         });
     }
