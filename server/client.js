@@ -5,6 +5,21 @@ var Accounts = require('./accounts.js'),
 var clients = [];
 
 var availableCommands = {
+    // CTCP ACTION-like (/me)
+    me: {
+        func: function (client, args) {
+            // update each client
+            client.stream.forEachClient(function (cl) {
+                cl.send({
+                    type: 'action',
+                    nick: client.prefix + client.chat_nick,
+                    msg: args
+                });
+            });
+        },
+        controllerOnly: false
+    },
+    // gets stats
     stats: {
         func: function (client, args) {
             var nonEmptyStreams = 0;
@@ -21,6 +36,7 @@ var availableCommands = {
         },
         controllerOnly: false
     },
+    // opens a poll
     poll: {
         func: function (client, args) {
             args = args.split(',');
@@ -35,6 +51,7 @@ var availableCommands = {
         },
         controllerOnly: true
     },
+    // closes poll
     closepoll: {
         func: function (client) {
             if (!client.stream.hasPoll()) {

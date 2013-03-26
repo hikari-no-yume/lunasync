@@ -595,12 +595,21 @@
                     updateUsersOnline();
                 break;
                 case 'msg':
+                case 'action':
                     elem = document.createElement('div');
                     elem2 = document.createElement('span');
                     elem2.className = 'chat-nick';
                     elem2.appendChild(document.createTextNode(msg.nick));
+                    if (msg.type === 'action') {
+                        elem.appendChild(document.createTextNode('* '));
+                        elem.className = 'chat-action';
+                    }
                     elem.appendChild(elem2);
-                    elem.appendChild(document.createTextNode(': '));
+                    if (msg.type === 'msg') {
+                        elem.appendChild(document.createTextNode(': '));
+                    } else {
+                        elem.appendChild(document.createTextNode(' '));
+                    }
                     appendTextAutoLink(elem, msg.msg);
                     $('chatlog').appendChild(elem);
                     scrollChatlog();

@@ -221,6 +221,10 @@ input[type=text] {
     color: orange;
 }
 
+.chat-action {
+    color: purple;
+}
+
 .chat-nick {
     font-weight: bold;
 }
