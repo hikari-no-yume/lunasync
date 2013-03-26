@@ -405,6 +405,19 @@ function hookEvents (client) {
 
                 client.stream.changeTitle(msg.title);
             break;
+            case 'change_shuffle':
+                // check that they have control of stream
+                if (!client.control) {
+                    client.send({
+                        type: 'error',
+                        error: 'not_control'
+                    });
+                    client.conn.close();
+                    return;
+                }
+
+                client.stream.changeShuffle(msg.shuffle);
+            break;
             case 'add_url':
                 // check that they have control of stream
                 if (!client.control) {
@@ -497,6 +510,7 @@ function Client (conn, stream, secret) {
             playing: stream.playing,
             current: stream.current,
             time: stream.getRelativeTime(),
+            shuffle: stream.shuffle,
             playlist: stream.playlist,
             poll: (stream.hasPoll() ? stream.getPoll() : null),
             viewers: stream.clientsViewing()

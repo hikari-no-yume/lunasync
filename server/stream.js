@@ -84,6 +84,7 @@ function _Stream(obj) {
     this.current = ((obj.current === 0) ? 0 : (obj.current || null));
     this.time = obj.time || null;
     this.playlist = obj.playlist || [];
+    this.shuffle = obj.shuffle || false;
     this.timeFrom = obj.timeFrom || secs();
     this.currentPoll = obj.currentPoll || null;
     this.clients = [];
@@ -99,6 +100,7 @@ _Stream.prototype.toJSON = function () {
         current: this.current,
         time: this.time,
         playlist: this.playlist,
+        suffle: this.shuffle,
         timeFrom: this.timeFrom,
         currentPoll: this.currentPoll
     };
@@ -325,6 +327,21 @@ _Stream.prototype.changeTitle = function (title) {
         cl.send({
             type: 'change_title',
             title: title
+        });
+    });
+
+    saveStreams();
+};
+
+// changes shuffle status
+_Stream.prototype.changeShuffle = function (val) {
+    this.shuffle = val;
+
+    // update each client
+    this.clients.forEach(function (cl) {
+        cl.send({
+            type: 'change_shuffle',
+            shuffle: val
         });
     });
 

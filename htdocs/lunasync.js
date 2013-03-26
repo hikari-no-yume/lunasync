@@ -210,13 +210,19 @@
                     state.playing = true;
                 // if the video ended
                 } else if (pstate === 0 /*YT.PlayerState.ENDED*/) {
-                    // if we haven't reached the end of the playlist
-                    if (state.current + 1 < state.playlist.length) {
-                        // cue next video
-                        cueIndex = state.current + 1;
+                    // if we're shuffling
+                    if (state.shuffle) {
+                        cueIndex = Math.floor(Math.random() * state.playlist.length);
+                    // in order (normal)
                     } else {
-                        // cue first video
-                        cueIndex = 0;
+                        // if we haven't reached the end of the playlist
+                        if (state.current + 1 < state.playlist.length) {
+                            // cue next video
+                            cueIndex = state.current + 1;
+                        } else {
+                            // cue first video
+                            cueIndex = 0;
+                        }
                     }
 
                     state.current = cueIndex;
@@ -273,6 +279,7 @@
                     state.playlist = stream.playlist;
                     state.poll = stream.poll;
                     state.viewers = stream.viewers;
+                    state.shuffle = stream.shuffle;
 
                     // display playlist
                     updatePlaylist();
@@ -283,9 +290,10 @@
                     // display user count
                     updateUsersOnline();
 
+                    // display shuffle status
+                    $('shuffle').checked = state.shuffle;
+
                     // cue and play correct video
-                    state.playing = stream.playing;
-                    state.current = stream.current;
                     if (state.current !== null && state.playlist.length) {
                         if (state.playing) {
                             player.loadVideoById(state.playlist[state.current].id, stream.time);
@@ -315,6 +323,15 @@
                         $('control-link').value = SITE_URL + '/' + stream.id + '#control=' + control;
 
                         // enable stream controls
+                        $('shuffle').disabled = false;
+                        $('shuffle').onchange = function () {
+                            send({
+                                type: 'change_shuffle',
+                                shuffle: $('shuffle').checked
+                            });
+                            state.shuffle = $('shuffle').checked;
+                        };
+
                         $('rm-button').disabled = false;
                         $('rm-button').onclick = function () {
                             var i, items = selectedOptions($('playlist')), oldCurrent, current;
@@ -520,6 +537,9 @@
                 case 'change_title':
                     $('title').value = msg.title;
                     document.title = msg.title + ' - lunasync';
+                break;
+                case 'change_shuffle':
+                    $('shuffle').checked = msg.shuffle;
                 break;
                 case 'cue':
                     state.playing = true;
