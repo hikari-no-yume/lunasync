@@ -110,7 +110,7 @@ function greet (client) {
     users = [];
     client.stream.forEachClient(function (cl) {
         if (cl.chat_nick !== null) {
-            users.push((cl.control ? '@' : '') + cl.chat_nick);
+            users.push(cl.prefix + cl.chat_nick);
         }
     });
     client.send({
@@ -241,7 +241,7 @@ function hookEvents (client) {
                             client.stream.forEachClient(function (cl) {
                                 cl.send({
                                     type: 'join',
-                                    nick: (client.control ? '@' : '') + client.chat_nick
+                                    nick: client.prefix + client.chat_nick
                                 });
                             });
                         } else {
@@ -300,7 +300,7 @@ function hookEvents (client) {
                 client.stream.forEachClient(function (cl) {
                     cl.send({
                         type: 'join',
-                        nick: client.chat_nick
+                        nick: client.prefix + client.chat_nick
                     });
                 });
             break;
@@ -337,7 +337,7 @@ function hookEvents (client) {
                     client.stream.forEachClient(function (cl) {
                         cl.send({
                             type: 'msg',
-                            nick: client.chat_nick,
+                            nick: client.prefix + client.chat_nick,
                             msg: msg.msg
                         });
                     });
@@ -499,6 +499,7 @@ function Client (conn, stream, secret) {
     this.chat_nick = null;
     this.email = null;
     this.poll_vote = null;
+    this.prefix = (this.control ? '@' : '');
 
     this.send({
         type: 'stream_info',
@@ -543,7 +544,7 @@ Client.prototype.destroy = function () {
         this.stream.forEachClient(function (cl) {
             cl.send({
                 type: 'leave',
-                nick: (that.control ? '@' : '') + that.chat_nick
+                nick: that.prefix + that.chat_nick
             });
         });
     }
