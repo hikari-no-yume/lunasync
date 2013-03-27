@@ -229,6 +229,20 @@ input[type=text] {
     color: rgb(120, 153, 34);
 }
 
+.chat-spoiler {
+    color: black;
+    background-color: black;
+}
+
+.chat-spoiler::before {
+    color: red;
+    content: 'spoiler ';
+}
+
+.chat-spoiler:hover {
+    color: white;
+}
+
 .chat-nick {
     font-weight: bold;
 }

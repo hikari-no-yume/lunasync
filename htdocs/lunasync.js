@@ -94,28 +94,39 @@
         parent.appendChild(document.createTextNode(text));
     }
 
-    function appendTextAutoLink(parent, text) {
-        var pos;
-        while (((pos = text.indexOf('http://')) !== -1) || ((pos = text.indexOf('https://')) !== -1)) {
-            var pos2 = text.indexOf(' ', pos);
-            var anchor = document.createElement('a');
-            anchor.className = 'chat-link';
-            anchor.target = '_blank';
-            if (pos2 === -1) {
-                appendText(parent, text.substr(0, pos));
-                anchor.href = text.substr(pos);
-                appendText(anchor, text.substr(pos));
+    function appendTextAutoFormat(parent, text) {
+        var pos, pos2, anchor, spoiler;
+        while (text) {
+            if ((pos = text.indexOf('http://')) !== -1 || (pos = text.indexOf('https://')) !== -1) {
+                pos2 = text.indexOf(' ', pos);
+                anchor = document.createElement('a');
+                anchor.className = 'chat-link';
+                anchor.target = '_blank';
+                if (pos2 === -1) {
+                    appendText(parent, text.substr(0, pos));
+                    anchor.href = text.substr(pos);
+                    appendText(anchor, text.substr(pos));
 
-                text = '';
-            } else {
+                    text = '';
+                } else {
+                    appendText(parent, text.substr(0, pos));
+                    anchor.href = text.substr(pos, pos2 - pos);
+                    appendText(anchor, text.substr(pos, pos2 - pos));
+                    text = text.substr(pos2);
+                }
+                parent.appendChild(anchor);
+            } else if ((pos = text.indexOf('[spoiler]')) !== -1 && (pos2 = text.indexOf('[/spoiler]', pos)) !== -1) {
+                spoiler = document.createElement('span');
+                spoiler.className = 'chat-spoiler';
                 appendText(parent, text.substr(0, pos));
-                anchor.href = text.substr(pos, pos2 - pos);
-                appendText(anchor, text.substr(pos, pos2 - pos));
-                text = text.substr(pos2);
+                appendText(spoiler, text.substr(pos + 9, pos2 - (pos + 9)));
+                parent.appendChild(spoiler);
+                text = text.substr(pos2 + 10);
+            } else {
+                appendText(parent, text);
+                text = '';
             }
-            parent.appendChild(anchor);
         }
-        appendText(parent, text);
     }
 
     function send(msg) {
@@ -613,10 +624,10 @@
                     if (msg.msg[0] === '>') {
                         elem3 = document.createElement('span');
                         elem3.className = 'chat-greentext';
-                        appendTextAutoLink(elem3, msg.msg);
+                        appendTextAutoFormat(elem3, msg.msg);
                         elem.appendChild(elem3);
                     } else {
-                        appendTextAutoLink(elem, msg.msg);
+                        appendTextAutoFormat(elem, msg.msg);
                     }
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
