@@ -225,6 +225,10 @@ input[type=text] {
     color: purple;
 }
 
+.chat-greentext {
+    color: rgb(120, 153, 34);
+}
+
 .chat-nick {
     font-weight: bold;
 }

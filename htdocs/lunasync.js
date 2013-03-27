@@ -258,7 +258,7 @@
             errored = true;
         };
         socket.onmessage = function (event) {
-            var msg, stream, elem, elem2, nick;
+            var msg, stream, elem, elem2, elem3, nick;
 
             msg = JSON.parse(event.data);
 
@@ -610,7 +610,14 @@
                     } else {
                         elem.appendChild(document.createTextNode(' '));
                     }
-                    appendTextAutoLink(elem, msg.msg);
+                    if (msg.msg[0] === '>') {
+                        elem3 = document.createElement('span');
+                        elem3.className = 'chat-greentext';
+                        appendTextAutoLink(elem3, msg.msg);
+                        elem.appendChild(elem3);
+                    } else {
+                        appendTextAutoLink(elem, msg.msg);
+                    }
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
