@@ -244,17 +244,10 @@
                         }
                     }
 
-                    state.current = cueIndex;
-                    state.playing = true;
-
                     send({
                         type: 'cue',
                         current: cueIndex
                     });
-
-                    player.loadVideoById(state.playlist[cueIndex].id);
-
-                    updatePlaylist();
                 }
             }
         };
@@ -313,7 +306,7 @@
                     $('shuffle').checked = state.shuffle;
 
                     // cue and play correct video
-                    if (state.current !== null && state.playlist.length) {
+                    if (state.current !== null && state.playlist.length && state.current < state.playlist.length) {
                         if (state.playing) {
                             player.loadVideoById(state.playlist[state.current].id, stream.time);
                         } else {
@@ -353,22 +346,48 @@
 
                         $('rm-button').disabled = false;
                         $('rm-button').onclick = function () {
-                            var i, items = selectedOptions($('playlist')), oldCurrent, current;
+                            var i, items = selectedOptions($('playlist')), oldCurrent, newCurrent, cue = false;
 
-                            oldCurrent = current = state.playlist[state.current];
+                            oldCurrent = newCurrent = state.playlist[state.current];
 
                             // remove selected playlist items
                             for (i = 0; i < items.length; i++) {
-                                // if currently playing video being deleted, switch to next
-                                if (state.playlist[items[i].dataLSindex] === current) {
-                                    // loop around
+                                // currently playing video being deleted
+                                if (state.playlist[items[i].dataLSindex] === newCurrent) {
+                                    console.log('state.playlist[items[i].dataLSindex] === newCurrent');
+                                    // go to next, if possible
                                     if (items[i].dataLSindex + 1 < state.playlist.length) {
-                                        current = state.playlist[items[i].dataLSindex + 1];
+                                        newCurrent = state.playlist[items[i].dataLSindex + 1];
+                                        console.log('went to next, +1');
+                                    // otherwise loop around, if possible
+                                    } else if (state.playlist.length) {
+                                        newCurrent = state.playlist[0];
+                                        console.log('looped around');
+                                    // otherwise stop
                                     } else {
-                                        current = state.playlist[0];
+                                        newCurrent = null;
+                                        console.log('nulled');
                                     }
                                 }
                                 state.playlist.splice(items[i].dataLSindex, 1);
+                            }
+
+                            // check if there is anything to play
+                            if (newCurrent !== null) {
+                                console.log('newCurrent !== null');
+                                // update the state
+                                state.current = state.playlist.indexOf(newCurrent);
+
+                                // now playing a different video than before
+                                if (newCurrent !== oldCurrent) {
+                                    console.log('newCurrent !== oldCurrent');
+                                    // cue that new video
+                                    cue = state.current;
+                                }
+                            } else {
+                                console.log('newCurrent === null');
+                                // cue nothing (stop)
+                                cue = null;
                             }
 
                             updatePlaylist();
@@ -381,19 +400,12 @@
                                 current: state.current
                             });
 
-                            if (current !== state.playlist[state.current]) {
-                                if (current !== null && state.playlist.indexOf(current) !== -1) {
-                                    current = state.playlist.indexOf(current);
-                                    send({
-                                        type: 'cue',
-                                        current: current
-                                    });
-                                } else {
-                                    send({
-                                        type: 'cue',
-                                        current: null
-                                    });
-                                }
+                            if (cue !== false) {
+                                console.log('cue !== false');
+                                send({
+                                    type: 'cue',
+                                    current: cue
+                                });
                             }
                         };
 
