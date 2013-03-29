@@ -120,6 +120,7 @@ wsServer.on('request', function(request) {
                 error: 'not_found'
             }));
             connection.close();
+            return;
         }
 
 
