@@ -4,7 +4,7 @@
     var API_SERVER = window.location.hostname + ':9003',
         SITE_URL = 'http://lunasync.ajf.me';
 
-    var mode, socket, player, ytReady = false, errored = false;
+    var mode, socket, player, ytReady = false, errored = false, inFocus = true;
 
     var state = {
         playing: false,
@@ -24,6 +24,14 @@
         player = $('player');
         // reload page if youtube player reloads to avoid initialising twice
         window.onYouTubePlayerReady = function () { window.location.reload(); };
+    };
+
+    window.onfocus = function () {
+        inFocus = true;
+    };
+
+    window.onblur = function () {
+        inFoucs = false;
     };
 
     window.onload = function () {

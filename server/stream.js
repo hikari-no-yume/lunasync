@@ -224,16 +224,44 @@ _Stream.prototype.openPoll = function (title, options) {
 
 // closes a poll
 _Stream.prototype.closePoll = function () {
-    var results, that = this;
+    var results, resultStrings, totalVotes; that = this;
 
     if (!this.hasPoll()) {
         throw new Error("There is no poll running.");
     }
 
-    results = this.currentPoll.title + ' results: ';
+    results = [];
+    totalVotes = 0;
+
     Object.keys(this.currentPoll.options).forEach(function (option) {
-        results += option + ' - ' + that.currentPoll.options[option] + ' votes;';
+        // total vote count
+        totalVotes += that.currentPoll.options[option].length;
+
+        // gather results into array so we can sort them
+        results.push({
+            title: option,
+            votes: that.currentPoll.options[option]
+        });
     });
+
+    // sort
+    results.sort(function (a, b) {
+        a = a.votes.length;
+        b = b.votes.length;
+        if (a < b) {
+            return 1;
+        } else if (a > b) {
+            return -1;
+        }
+        return 0;
+    });
+
+    // make results string
+    resultStrings = [];
+    results.forEach(function (option) {
+        resultStrings.push(option.title + ' - ' + option.votes.length + '/' + totalVotes + ', ' + (100 * (option.votes.length / totalVotes)) + '% (' + option.votes.join(', ') + ')');
+    });
+    results = 'Poll "' + this.currentPoll.title + '" closed, results: ' + resultStrings.join('; ');
 
     this.currentPoll = null;
     saveStreams();
