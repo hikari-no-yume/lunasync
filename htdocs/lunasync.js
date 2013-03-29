@@ -306,7 +306,7 @@
                     $('shuffle').checked = state.shuffle;
 
                     // cue and play correct video
-                    if (state.current !== null && state.playlist.length && state.current < state.playlist.length) {
+                    if (state.current !== null && state.playlist.length && state.playlist[state.current]) {
                         if (state.playing) {
                             player.loadVideoById(state.playlist[state.current].id, stream.time);
                         } else {
@@ -504,6 +504,31 @@
                                     alert($('add-url').value + ' is not a valid youtube URL!');
                                 }
                                 return false;
+                            }
+                        };
+                        $('add-url').onkeyup = function (e) {
+                            var videoID, i, re;
+
+                            if ($('add-url').value) {
+                                // search for ID match if it looks like a URL
+                                videoID = getVideoID($('add-url').value)
+                                if (videoID) {
+                                    for (i = 0; i < state.playlist.length; i++) {
+                                        if (state.playlist[i].id === videoID) {
+                                            $('playlist').selectedIndex = i;
+                                            break;
+                                        }
+                                    }
+                                // otherwise do regex search
+                                } else {
+                                    re = new RegExp($('add-url').value, 'gi');
+                                    for (i = 0; i < state.playlist.length; i++) {
+                                        if (state.playlist[i].title.match(re)) {
+                                            $('playlist').selectedIndex = i;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         };
                         $('playlist').disabled = false;
