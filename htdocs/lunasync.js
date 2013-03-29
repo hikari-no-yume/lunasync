@@ -434,6 +434,7 @@
                                 if (items[i].dataLSindex - 1 >= 0) {
                                     item = state.playlist.splice(items[i].dataLSindex, 1);
                                     state.playlist.splice(items[i].dataLSindex - 1, 0, item[0]);
+                                    // current video index pointed to this item
                                     if (state.current === items[i].dataLSindex) {
                                         state.current--;
                                     }
@@ -463,6 +464,7 @@
                                 if (items[i].dataLSindex + 1 < state.playlist.length) {
                                     item = state.playlist.splice(items[i].dataLSindex, 1);
                                     state.playlist.splice(items[i].dataLSindex + 1, 0, item[0]);
+                                    // current video index pointed to this item
                                     if (state.current === items[i].dataLSindex) {
                                         state.current++;
                                     }
