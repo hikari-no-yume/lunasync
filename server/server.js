@@ -3,7 +3,8 @@
 var WebSocketServer = require('websocket').server,
     http = require('http'),
     url = require('url'),
-    fs = require('fs');
+    fs = require('fs'),
+    express = require('express');
 
 var Stream = require('./stream.js'),
     Client = require('./client.js'),
@@ -129,6 +130,29 @@ wsServer.on('request', function(request) {
         client = new Client(connection, Stream.get(msg.id), msg.control);
     });
 });
+
+if(Config.useInternalServer) {
+    var app = express();
+    var lunasync_js = fs.readFileSync("../htdocs/lunasync.js", {encoding: "utf8"})
+                        .replace("http://lunasync.ajf.me", (Constants.DEBUG_MODE ? Config.debugOrigin : Config.origin));
+    var index_html = fs.readFileSync("../htdocs/index.html", {encoding: "utf8"});
+    app.use("/lunasync.js",function(req,res) {
+        res.send(lunasync_js);
+    });
+    app.use("/",express.static("../htdocs"));
+    app.use("/", function(req,res) {
+        // Static lookup failed
+        res.send(index_html);
+    });
+    if(Constants.DEBUG_MODE) {
+        var port = Number(Config.debugOrigin.match(/[0-9]+$/)) || 8000;
+        app.listen(port);
+        console.log("[InternalServer] Listening on port "+port);
+    } else {
+        app.listen(80);
+        console.log("[InternalServer] Listening on port 80");
+    }
+}
 
 var keypress = require('keypress');
 
