@@ -1,4 +1,0 @@
-{ "useInternalServer": true,
-  "debugOrigin": "http://localhost:8000",
-  "origin": "http://lunasync.ajf.me"
-}
