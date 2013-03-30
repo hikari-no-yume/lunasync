@@ -378,7 +378,8 @@ function hookEvents (client) {
                 client.stream.forEachClient(function (cl) {
                     cl.send({
                         type: 'join',
-                        nick: client.prefix + client.chat_nick
+                        nick: client.chat_nick,
+                        prefix: client.prefix
                     });
                 });
             break;
