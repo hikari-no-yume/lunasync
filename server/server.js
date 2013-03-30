@@ -7,7 +7,8 @@ var WebSocketServer = require('websocket').server,
 
 var Stream = require('./stream.js'),
     Client = require('./client.js'),
-    Constants = require('./constants.js');
+    Constants = require('./constants.js'),
+    Config = require('./config.json');
 
 var server = http.createServer(function(request, response) {
     var headers, parts, stream, id, data = '';
@@ -16,7 +17,7 @@ var server = http.createServer(function(request, response) {
     // CORS (allows access to API from other domains)
     // (needed because API server does not host static HTML/JS which uses it)
     headers = {
-        'Access-Control-Allow-Origin': (Constants.DEBUG_MODE ? '*' : Constants.DEFAULT_ORIGIN),
+        'Access-Control-Allow-Origin': (Constants.DEBUG_MODE ? '*' : Config.origin),
         'Access-Control-Allow-Headers': 'Content-Type',
         'Content-Type': 'application/json; charset=utf-8'
     };
@@ -66,7 +67,7 @@ wsServer = new WebSocketServer({
 wsServer.on('request', function(request) {
     var client = null, stream = null, connection;
 
-    if (!Constants.DEBUG_MODE && request.origin !== Constants.DEFAULT_ORIGIN) {
+    if (!Constants.DEBUG_MODE && request.origin !== Config.origin) {
         request.reject();
         console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
         return;

@@ -1,7 +1,8 @@
 var fs = require('fs'),
     https = require('https');
 
-var Constants = require('./constants.js');
+var Constants = require('./constants.js')
+  , Config = require('./config.json');
 
 // internal variables and functions
 var accountEmails = {}, accounts = {};
@@ -29,9 +30,9 @@ var Accounts = {
         var postdata;
 
         if (Constants.DEBUG_MODE) {
-            postdata = 'assertion=' + assertion + '&audience=' + Constants.DEBUG_ORIGIN;
+            postdata = 'assertion=' + assertion + '&audience=' + Config.debugOrigin;
         } else {
-            postdata = 'assertion=' + assertion + '&audience=' + Constants.DEFAULT_ORIGIN;
+            postdata = 'assertion=' + assertion + '&audience=' + Config.origin;
         }
 
         var req = https.request({
