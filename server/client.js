@@ -522,7 +522,7 @@ function hookEvents (client) {
                     return;
                 }
 
-                client.stream.addVideo(msg.id);
+                client.stream.addVideo(msg.videotype || "youtube", msg.id);
             break;
             case 'play':
                 // check that they have control of stream

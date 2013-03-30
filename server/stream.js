@@ -40,7 +40,8 @@ function generateSecret() {
 }
 
 // fetches YouTube video title
-function getVideoTitle(id, callback) {
+function getVideoTitle(type, id, callback) {
+    if(type != "youtube") return;
     console.log('Fetching video title for: ' + id);
     http.get({
         host: 'www.youtube.com',
@@ -476,17 +477,19 @@ _Stream.prototype.changeShuffle = function (val) {
 };
 
 // add video to playlist
-_Stream.prototype.addVideo = function (id) {
+_Stream.prototype.addVideo = function (type, id) {
     var that = this;
 
-    getVideoTitle(id, function (res) {
+    getVideoTitle(type, id, function (res) {
         if (res === false) {
             that.playlist.push({
+                type: type,
                 id: id,
                 title: 'YouTube Video: ' + id
             });
         } else {
             that.playlist.push({
+                type: type,
                 id: id,
                 title: res
             });
