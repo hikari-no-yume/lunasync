@@ -10,9 +10,14 @@ Setup
 
 1. `npm install`
 
-2. Set up a web server on `localhost:8000` that serves `index.html` for its 404 page... my code shouldn't rely on this, but it does.
+2. Configure `server/config.json`. Unless you're ajf, keep `useInternalServer` as `true`. Set `debugOrigin` and `origin` to the hostnames of the places you'll be hosting lunasync on. Here's a default config.json:
 
-3. Run `node server.js` on the same hostname. (Add the `--debug` flag when debugging to ignore request origins). For production use you'll need to change the code of both `lunasync.js` and `server.js` if that hostname isn't `lunasync.ajf.me`, it's hard-coded, sorry. However when debugging, it will just try to contact the WebSocket server from the same domain. Note: Persona logins are hard-wired to use an origin of `http://localhost:8000` in debug mode, and `http://lunasync.ajf.me` normally, so you'd also have to edit that.
+    { "useInternalServer": true,
+      "debugOrigin": "http://localhost:8000",
+      "origin": "http://lunasync.ajf.me"
+    }
+
+3. Run `node server.js` on the same hostname. (Add the `--debug` flag when debugging to ignore request origins).
 
 4. That's it, I think?
 

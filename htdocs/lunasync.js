@@ -31,7 +31,7 @@
     };
 
     window.onblur = function () {
-        inFoucs = false;
+        inFocus = false;
     };
 
     window.onload = function () {
@@ -487,34 +487,35 @@
 
                         $('add-url').disabled = false;
                         $('add-url').onkeypress = function (e) {
-                            var videoID;
+                            var videoData;
 
                             // enter
                             if (e.which === 13) {
                                 e.preventDefault();
                                 $('add-url').blur();
-                                videoID = getVideoID($('add-url').value);
-                                if (videoID !== false) {
+                                videoData = getVideoData($('add-url').value);
+                                if (videoData !== false) {
                                     send({
                                         type: 'add_url',
-                                        id: videoID
+                                        videotype: videoData.type,
+                                        id: videoData.id
                                     });
                                     $('add-url').value = '';
                                 } else {
-                                    alert($('add-url').value + ' is not a valid youtube URL!');
+                                    alert($('add-url').value + ' is not a valid URL!');
                                 }
                                 return false;
                             }
                         };
                         $('add-url').onkeyup = function (e) {
-                            var videoID, i, re;
+                            var videoData, i, re;
 
                             if ($('add-url').value) {
                                 // search for ID match if it looks like a URL
-                                videoID = getVideoID($('add-url').value)
-                                if (videoID) {
+                                videoData = getVideoData($('add-url').value)
+                                if (videoData) {
                                     for (i = 0; i < state.playlist.length; i++) {
-                                        if (state.playlist[i].id === videoID) {
+                                        if (state.playlist[i].id === videoData.id) {
                                             $('playlist').selectedIndex = i;
                                             break;
                                         }
@@ -873,19 +874,9 @@
         }
     }
 
-    function getVideoID(url) {
+    function getYouTubeVideoID(url) {
         var pos, pos2;
 
-        if (url.substr(0, 7) === 'http://') {
-            url = url.substr(7);
-        } else if (url.substr(0, 8) === 'https://') {
-            url = url.substr(8);
-        } else {
-            return false;
-        }
-        if (url.substr(0, 4) === 'www.') {
-            url = url.substr(4);
-        }
         if (url.substr(0, 9) === 'youtu.be/') {
             return url.substr(9);
         } else if (url.substr(0, 18) === 'youtube.com/watch?') {
@@ -903,5 +894,27 @@
                 return false;
             }
         }
+    }
+    function getTwitchVideoID(url) {
+	if (url.substr(0,10) === 'twitch.tv/') {
+          return url.substr(10);
+        } else return false;
+    }
+    function getVideoData(url) {
+        if (url.substr(0, 7) === 'http://') {
+            url = url.substr(7);
+        } else if (url.substr(0, 8) === 'https://') {
+            url = url.substr(8);
+        } else {
+            return false;
+        }
+        if (url.substr(0, 4) === 'www.') {
+            url = url.substr(4);
+        }
+	if(getYouTubeVideoID(url))
+          return { type: "youtube", id: getYouTubeVideoID(url) };
+        else if(getTwitchVideoID(url))
+          return { type: "twitch", id: getTwitchVideoID(url) };
+        else return false;
     }
 }());
