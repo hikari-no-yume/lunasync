@@ -1,3 +1,5 @@
+var underscore = require('underscore');
+
 var Accounts = require('./accounts.js'),
     Stream = require('./stream.js');
 
@@ -58,6 +60,37 @@ var availableCommands = {
                 return;
             }
             client.stream.closePoll();
+        },
+        controllerOnly: true
+    },
+    // (un)mutes user
+    mute: {
+        func: function (client, args) {
+            var nick = args, cl;
+
+            if (!client.stream.hasNick(nick)) {
+                client.send({
+                    type: 'chat_info',
+                    msg: '/mute requires a nick, there is no such nick in chat: "' + args + '"'
+                });
+                return;
+            }
+
+            cl = client.stream.getByNick(nick);
+
+            if (cl.control) {
+                client.send({
+                    type: 'chat_info',
+                    msg: 'You cannot mute controllers.'
+                });
+                return;
+            }
+
+            if (cl.muted) {
+                cl.stream.unmuteClient(cl);
+            } else {
+                cl.stream.muteClient(cl);
+            }
         },
         controllerOnly: true
     }
@@ -124,10 +157,12 @@ function greet (client) {
     var users;
     
     // user list
-    users = [];
+    users = {};
     client.stream.forEachClient(function (cl) {
         if (cl.chat_nick !== null) {
-            users.push(cl.prefix + cl.chat_nick);
+            users[cl.chat_nick] = {
+                prefix: cl.prefix
+            };
         }
     });
     client.send({
@@ -148,6 +183,10 @@ function greet (client) {
         client.send({
             type: 'chat_info',
             msg: '/closepoll - closes the poll'
+        });
+        client.send({
+            type: 'chat_info',
+            msg: '/mute nick - (un)mutes a user'
         });
     }
 }
@@ -245,20 +284,32 @@ function hookEvents (client) {
                             }
 
                             client.chat_nick = account.nick;
+                            client.muted = !client.control && client.stream.isClientMuted(client.chat_nick);
+                            client.prefix = (client.control ? '@' : client.stream.isClientMuted(client.chat_nick) ? '~' : '');
 
                             client.send({
                                 type: 'nick_chosen',
-                                nick: client.chat_nick
+                                nick: client.chat_nick,
+                                prefix: client.prefix
                             });
 
                             // tell the stream
                             client.stream.onJoinChat(client);
 
+                            // inform if muted
+                            if (client.muted) {
+                                client.send({
+                                    type: 'chat_info',
+                                    msg: 'You are currently muted and cannot send messages.'
+                                });
+                            }
+
                             // update each client
                             client.stream.forEachClient(function (cl) {
                                 cl.send({
                                     type: 'join',
-                                    nick: client.prefix + client.chat_nick
+                                    prefix: client.prefix,
+                                    nick: client.chat_nick
                                 });
                             });
                         } else {
@@ -303,15 +354,25 @@ function hookEvents (client) {
                 }
                 Accounts.add(client.email, msg.nick);
                 client.chat_nick = msg.nick;
+                client.muted = !client.control && client.stream.isClientMuted(client.chat_nick);
+                client.prefix = (client.control ? '@' : client.stream.isClientMuted(client.chat_nick) ? '~' : '');
 
                 client.send({
                     type: 'nick_chosen',
-                    nick: client.chat_nick
+                    nick: client.chat_nick,
+                    prefix: client.prefix
                 });
-
 
                 // tell the stream
                 client.stream.onJoinChat(client);
+
+                // inform if muted
+                if (client.muted) {
+                    client.send({
+                        type: 'chat_info',
+                        msg: 'You are currently muted and cannot send messages.'
+                    });
+                }
 
                 // update each client
                 client.stream.forEachClient(function (cl) {
@@ -332,6 +393,13 @@ function hookEvents (client) {
                 }
                 // command
                 if (msg.msg[0] === '/') {
+                    if (client.muted) {
+                        client.send({
+                            type: 'chat_info',
+                            msg: 'You are currently muted, your command was not run: "' + msg.msg + '"'
+                        });
+                        return;
+                    }
                     cmd = parseCommand(msg.msg);
                     if (!commandExists(cmd.name)) {
                         client.send({
@@ -350,6 +418,13 @@ function hookEvents (client) {
                     runCommand(cmd.name, cmd.args, client);
                 // normal message
                 } else {
+                    if (client.muted) {
+                        client.send({
+                            type: 'chat_info',
+                            msg: 'You are currently muted, your message was not sent: "' + msg.msg + '"'
+                        });
+                        return;
+                    }
                     // update each client
                     client.stream.forEachClient(function (cl) {
                         cl.send({
@@ -516,7 +591,8 @@ function Client (conn, stream, secret) {
     this.chat_nick = null;
     this.email = null;
     this.poll_vote = null;
-    this.prefix = (this.control ? '@' : '');
+    this.prefix = '';
+    this.muted = false;
 
     this.send({
         type: 'stream_info',
@@ -561,7 +637,8 @@ Client.prototype.destroy = function () {
         this.stream.forEachClient(function (cl) {
             cl.send({
                 type: 'leave',
-                nick: that.prefix + that.chat_nick
+                nick: that.chat_nick,
+                prefix: that.prefix
             });
         });
     }

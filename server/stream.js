@@ -1,6 +1,7 @@
 var fs = require('fs'),
     http = require('http'),
-    entities = require('entities');
+    entities = require('entities'),
+    _ = require('underscore');
 
 // internal variables and functions
 var streams = [];
@@ -87,6 +88,8 @@ function _Stream(obj) {
     this.shuffle = obj.shuffle || false;
     this.timeFrom = obj.timeFrom || secs();
     this.currentPoll = obj.currentPoll || null;
+    this.mutedClients = obj.mutedClients || [];
+
     this.clients = [];
 };
 
@@ -102,7 +105,8 @@ _Stream.prototype.toJSON = function () {
         playlist: this.playlist,
         suffle: this.shuffle,
         timeFrom: this.timeFrom,
-        currentPoll: this.currentPoll
+        currentPoll: this.currentPoll,
+        mutedClients: this.mutedClients
     };
 };
 
@@ -173,6 +177,26 @@ _Stream.prototype.usersViewing = function () {
 // iterate over each client, calling callback for each
 _Stream.prototype.forEachClient = function (callback) {
     this.clients.forEach(callback);
+};
+
+// check if we have a given client by nick, case-insensitive
+_Stream.prototype.hasNick = function (nick) {
+    return !!_.find(this.clients, function (cl) {
+        return cl.chat_nick && cl.chat_nick.toLowerCase() === nick.toLowerCase();
+    });
+};
+
+// get a given client by nick, case-insensitive
+_Stream.prototype.getByNick = function (nick) {
+    var cl = _.find(this.clients, function (cl) {
+        return cl.chat_nick && cl.chat_nick.toLowerCase() === nick.toLowerCase();
+    });
+
+    if (!nick) {
+        throw new Error('No such nick: "' + nick + '"');
+    }
+
+    return cl;
 };
 
 // returns count of clients viewing
@@ -325,6 +349,81 @@ _Stream.prototype.vote = function (client, option) {
             type: 'poll',
             poll: that.getPoll(),
             poll_vote: cl.poll_vote
+        });
+    });
+};
+
+// returns true if client is muted (by nick), else false
+_Stream.prototype.isClientMuted = function (nick) {
+    return _.contains(this.mutedClients, nick);
+};
+
+// mutes client, returns false on failure, 
+_Stream.prototype.muteClient = function (client) {
+    var that = this;
+
+    if (!_.contains(this.clients, client)) {
+        throw new Error("Client is not attached to this stream.");
+    }
+
+    if (client.chat_nick === null) {
+        throw new Error("Client is not in chat.");
+    }
+
+    if (client.control) {
+        throw new Error("Client is controller, cannot be muted.");
+    }
+
+    // check this client isn't already muted
+    if (this.isClientMuted(client.chat_nick)) {
+        return;
+    }
+
+    client.prefix = '~';
+    client.muted = true;
+    
+    this.mutedClients.push(client.chat_nick);
+    saveStreams();    
+
+    // update each client
+    this.forEachClient(function (cl) {
+        cl.send({
+            type: 'mute',
+            nick: client.chat_nick
+        });
+    });
+};
+
+// mutes client, returns false on failure, 
+_Stream.prototype.unmuteClient = function (client) {
+    var that = this;
+
+    if (!_.contains(this.clients, client)) {
+        throw new Error("Client is not attached to this stream.");
+    }
+
+    if (client.chat_nick === null) {
+        throw new Error("Client is not in chat.");
+    }
+
+    // check this client isn't already muted
+    if (!_.contains(this.mutedClients, client.chat_nick)) {
+        return;
+    }
+
+    // only one possible new prefix since controllers can't be muted
+    client.prefix = '';
+    client.muted = false;
+    
+    this.mutedClients = _.without(this.mutedClients, client.chat_nick);
+    saveStreams();    
+
+    // update each client
+    this.forEachClient(function (cl) {
+        cl.send({
+            type: 'unmute',
+            nick: client.chat_nick,
+            prefix: client.prefix
         });
     });
 };

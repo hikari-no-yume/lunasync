@@ -77,6 +77,10 @@ input[type=text] {
     min-width: 200px;
 }
 
+input[type=text][disabled] {
+    background-color: rgba(127, 127, 127, 0.2);
+}
+
 #title {
     width: 300px;
 }
@@ -217,6 +221,10 @@ input[type=text] {
     color: maroon;
 }
 
+.chat-mute {
+    color: silver;
+}
+
 .chat-update {
     color: orange;
 }
@@ -245,6 +253,14 @@ input[type=text] {
 
 .chat-nick {
     font-weight: bold;
+}
+
+.user-op {
+    color: crimson;
+}
+
+.user-muted {
+    text-decoration: line-through;
 }
 
 #poll {

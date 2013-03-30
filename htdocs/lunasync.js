@@ -11,7 +11,7 @@
         current: null,
         playlist: [],
         poll: null,
-        users: [],
+        users: {},
         viewers: 0
     }, haveControl = false, pollVote = null, chatNick = null;
 
@@ -622,22 +622,46 @@
                 case 'join':
                     elem = document.createElement('div');
                     elem.className = 'chat-join';
-                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' joined chat'));
+                    elem.appendChild(document.createTextNode('* ' + msg.prefix + msg.nick + ' joined chat'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
-                    state.users.push(msg.nick);
+                    state.users[msg.nick] = {
+                        prefix: msg.prefix
+                    };
                     updateUsersOnline();
                 break;
                 case 'leave':
                     elem = document.createElement('div');
                     elem.className = 'chat-leave';
-                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' left chat'));
+                    elem.appendChild(document.createTextNode('* ' + msg.prefix + msg.nick + ' left chat'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
-                    if (state.users.indexOf(msg.nick) !== -1) {
-                        state.users.splice(state.users.indexOf(msg.nick), 1);
-                        updateUsersOnline();
+                    delete state.users[msg.nick];
+                    updateUsersOnline();
+                break;
+                case 'mute':
+                    elem = document.createElement('div');
+                    elem.className = 'chat-mute';
+                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' was muted'));
+                    $('chatlog').appendChild(elem);
+                    scrollChatlog();
+                    state.users[msg.nick].prefix = '~';
+                    if (chatNick === msg.nick) {
+                        $('chatbox').disabled = true;
                     }
+                    updateUsersOnline();
+                break;
+                case 'unmute':
+                    elem = document.createElement('div');
+                    elem.className = 'chat-mute';
+                    elem.appendChild(document.createTextNode('* ~' + msg.nick + ' was unmuted'));
+                    $('chatlog').appendChild(elem);
+                    scrollChatlog();
+                    state.users[msg.nick].prefix = msg.prefix;
+                    if (chatNick === msg.nick) {
+                        $('chatbox').disabled = false;
+                    }
+                    updateUsersOnline();
                 break;
                 case 'poll':
                     state.poll = msg.poll;
@@ -689,7 +713,8 @@
                 case 'nick_chosen':
                     $('chatbox').placeholder = 'say something (press enter)';
                     chatNick = msg.nick;
-                    $('chatbox').disabled = false;
+                    // disable chatbox if muted, else enable
+                    $('chatbox').disabled = (msg.prefix === '~');
                     $('login-btn').className = 'unloaded';
                     $('chatbox').className = '';
                     $('logout-btn').className = '';
@@ -778,12 +803,12 @@
 
 
     function updateUsersOnline() {
-        var i, elem, option;
+        var i, elem, userKeys;
 
-        // sort list first
-        state.users.sort(function (a, b) {
-            a = a.toLowerCase();
-            b = b.toLowerCase();
+        // sort nicks case-insensitively inclusive of prefix
+        userKeys = _.keys(state.users).sort(function (a, b) {
+            a = state.users[a].prefix + a.toLowerCase();
+            b = state.users[b].prefix + b.toLowerCase();
             if (a < b) {
                 return -1;
             } else if (a > b) {
@@ -791,13 +816,20 @@
             }
             return 0;
         });
-        $('users-online').innerHTML = state.users.length + '/' + state.viewers + ' viewers in chat:';
+        $('users-online').innerHTML = _.size(state.users) + '/' + state.viewers + ' viewers in chat:';
         elem = document.createElement('ul');
-        for (i = 0; i < state.users.length; i++) {
+        _.each(userKeys, function (nick) {
+            var option, user = state.users[nick];
+
             option = document.createElement('li');
-            option.appendChild(document.createTextNode(state.users[i]));
+            if (user.prefix === '@') {
+                option.className = 'user-op';
+            } else if (user.prefix === '~') {
+                option.className = 'user-muted';
+            }
+            option.appendChild(document.createTextNode(user.prefix + nick));
             elem.appendChild(option);
-        }
+        });
         $('users-online').appendChild(elem);
     }
 

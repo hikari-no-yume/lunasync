@@ -4,6 +4,7 @@
     "dependencies": {
         "websocket": "latest",
         "keypress": "0.1.0",
+        "underscore": "1.4.4",
         "entities": "https://github.com/FB55/node-entities/tarball/master"
     }
 }
