@@ -19,11 +19,6 @@ body {
     font-family: sans-serif;
     font-size: 11pt;
     color: white;
-    -webkit-transform: rotate(1deg);
-    -moz-transform: rotate(1deg);
-    -ms-transform: rotate(1deg);
-    -o-transform: rotate(1deg);
-    transform: rotate(1deg);
 }
 
 a {
@@ -150,6 +145,14 @@ input[type=text][disabled] {
 
 #chat-buttons {
     clear: both;
+}
+
+#chatlog {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 @media screen and (min-width: 1318px) {
