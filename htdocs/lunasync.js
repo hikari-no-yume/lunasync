@@ -896,9 +896,11 @@
         }
     }
     function getTwitchVideoID(url) {
-	if (url.substr(0,10) === 'twitch.tv/') {
+	    if (url.substr(0,10) === 'twitch.tv/') {
           return url.substr(10);
-        } else return false;
+        } else {
+            return false;
+        }
     }
     function getVideoData(url) {
         if (url.substr(0, 7) === 'http://') {
@@ -911,10 +913,18 @@
         if (url.substr(0, 4) === 'www.') {
             url = url.substr(4);
         }
-	if(getYouTubeVideoID(url))
-          return { type: "youtube", id: getYouTubeVideoID(url) };
-        else if(getTwitchVideoID(url))
-          return { type: "twitch", id: getTwitchVideoID(url) };
-        else return false;
+	    i f(getYouTubeVideoID(url)) {
+            return {
+                type: "youtube",
+                id: getYouTubeVideoID(url)
+            };
+        } else if (getTwitchVideoID(url)) {
+            return {
+                type: "twitch",
+                id: getTwitchVideoID(url)
+            };
+        } else {
+            return false;
+        }
     }
 }());
