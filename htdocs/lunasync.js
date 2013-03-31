@@ -913,7 +913,7 @@
         if (url.substr(0, 4) === 'www.') {
             url = url.substr(4);
         }
-	    i f(getYouTubeVideoID(url)) {
+	    if (getYouTubeVideoID(url)) {
             return {
                 type: "youtube",
                 id: getYouTubeVideoID(url)
