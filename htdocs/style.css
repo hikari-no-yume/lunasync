@@ -62,6 +62,12 @@ header {
 
 #meta {
     margin-bottom: 5px;
+    overflow: hidden;
+}
+
+#bouncing-luna2 {
+    display: block;
+    float: right;
 }
 
 #viewer {
