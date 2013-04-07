@@ -219,8 +219,13 @@ _Stream.prototype.getPoll = function () {
 };
 
 // opens a poll
-_Stream.prototype.openPoll = function (title, options) {
+_Stream.prototype.openPoll = function (title, options, nick) {
     var that = this;
+
+    // close poll first if one already running
+    if (this.hasPoll()) {
+        this.closePoll(nick);
+    }
 
     this.currentPoll = {
         title: title,
@@ -242,13 +247,13 @@ _Stream.prototype.openPoll = function (title, options) {
         });
         cl.send({
             type: 'chat_info',
-            msg: 'Poll opened'
+            msg: 'Poll "' + title + '" opened by ' + nick
         });
     });
 };
 
 // closes a poll
-_Stream.prototype.closePoll = function () {
+_Stream.prototype.closePoll = function (nick) {
     var results, resultStrings, totalVotes; that = this;
 
     if (!this.hasPoll()) {
@@ -286,7 +291,7 @@ _Stream.prototype.closePoll = function () {
     results.forEach(function (option) {
         resultStrings.push(option.title + ' - ' + option.votes.length + '/' + totalVotes + ', ' + (100 * (option.votes.length / totalVotes)) + '% (' + option.votes.join(', ') + ')');
     });
-    results = 'Poll "' + this.currentPoll.title + '" closed, results: ' + resultStrings.join('; ');
+    results = 'Poll "' + this.currentPoll.title + '" closed by ' + nick + ', results: ' + resultStrings.join('; ');
 
     this.currentPoll = null;
     saveStreams();
@@ -301,7 +306,7 @@ _Stream.prototype.closePoll = function () {
         });
         cl.send({
             type: 'chat_info',
-            msg: 'Poll closed - ' + results
+            msg: results
         });
     });
 };
@@ -360,7 +365,7 @@ _Stream.prototype.isClientMuted = function (nick) {
 };
 
 // mutes client, returns false on failure, 
-_Stream.prototype.muteClient = function (client) {
+_Stream.prototype.muteClient = function (client, nick) {
     var that = this;
 
     if (!_.contains(this.clients, client)) {
@@ -390,13 +395,14 @@ _Stream.prototype.muteClient = function (client) {
     this.forEachClient(function (cl) {
         cl.send({
             type: 'mute',
-            nick: client.chat_nick
+            nick: client.chat_nick,
+            by: nick
         });
     });
 };
 
-// mutes client, returns false on failure, 
-_Stream.prototype.unmuteClient = function (client) {
+// unmutes client, returns false on failure, 
+_Stream.prototype.unmuteClient = function (client, nick) {
     var that = this;
 
     if (!_.contains(this.clients, client)) {
@@ -424,7 +430,8 @@ _Stream.prototype.unmuteClient = function (client) {
         cl.send({
             type: 'unmute',
             nick: client.chat_nick,
-            prefix: client.prefix
+            prefix: client.prefix,
+            by: nick
         });
     });
 };
@@ -447,14 +454,15 @@ _Stream.prototype.updatePlaylist = function (playlist, current) {
 };
 
 // changes title
-_Stream.prototype.changeTitle = function (title) {
+_Stream.prototype.changeTitle = function (title, nick) {
     this.title = title;
 
     // update each client
     this.clients.forEach(function (cl) {
         cl.send({
             type: 'change_title',
-            title: title
+            title: title,
+            by: nick
         });
     });
 

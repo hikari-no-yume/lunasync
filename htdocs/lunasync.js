@@ -596,6 +596,11 @@
                 case 'change_title':
                     $('title').value = msg.title;
                     document.title = msg.title + ' - lunasync';
+                    elem = document.createElement('div');
+                    elem.className = 'chat-mute';
+                    elem.appendChild(document.createTextNode('* Title was changed to "' + msg.title + '"' + (msg.by ? (' by ' + msg.by) : '')));
+                    $('chatlog').appendChild(elem);
+                    scrollChatlog();
                 break;
                 case 'change_shuffle':
                     $('shuffle').checked = msg.shuffle;
@@ -643,7 +648,7 @@
                 case 'mute':
                     elem = document.createElement('div');
                     elem.className = 'chat-mute';
-                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' was muted'));
+                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' was muted by' + msg.by));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                     state.users[msg.nick].prefix = '~';
@@ -655,7 +660,7 @@
                 case 'unmute':
                     elem = document.createElement('div');
                     elem.className = 'chat-mute';
-                    elem.appendChild(document.createTextNode('* ~' + msg.nick + ' was unmuted'));
+                    elem.appendChild(document.createTextNode('* ~' + msg.nick + ' was unmuted by' + msg.by));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                     state.users[msg.nick].prefix = msg.prefix;

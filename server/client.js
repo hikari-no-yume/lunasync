@@ -43,7 +43,7 @@ var availableCommands = {
         func: function (client, args) {
             args = args.split(',');
             if (args.length > 2) {
-                client.stream.openPoll(args[0], args.slice(1));
+                client.stream.openPoll(args[0], args.slice(1), client.chat_nick);
             } else {
                 client.send({
                     type: 'chat_info',
@@ -59,7 +59,7 @@ var availableCommands = {
             if (!client.stream.hasPoll()) {
                 return;
             }
-            client.stream.closePoll();
+            client.stream.closePoll(client.chat_nick);
         },
         controllerOnly: true
     },
@@ -87,9 +87,9 @@ var availableCommands = {
             }
 
             if (cl.muted) {
-                cl.stream.unmuteClient(cl);
+                cl.stream.unmuteClient(cl, client.chat_nick);
             } else {
-                cl.stream.muteClient(cl);
+                cl.stream.muteClient(cl, client.chat_nick);
             }
         },
         controllerOnly: true
@@ -496,7 +496,7 @@ function hookEvents (client) {
                     return;
                 }
 
-                client.stream.changeTitle(msg.title);
+                client.stream.changeTitle(msg.title, client.chat_nick);
             break;
             case 'change_shuffle':
                 // check that they have control of stream
