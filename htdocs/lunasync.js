@@ -648,7 +648,7 @@
                 case 'mute':
                     elem = document.createElement('div');
                     elem.className = 'chat-mute';
-                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' was muted by' + msg.by));
+                    elem.appendChild(document.createTextNode('* ' + msg.nick + ' was muted by ' + msg.by));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                     state.users[msg.nick].prefix = '~';
@@ -660,7 +660,7 @@
                 case 'unmute':
                     elem = document.createElement('div');
                     elem.className = 'chat-mute';
-                    elem.appendChild(document.createTextNode('* ~' + msg.nick + ' was unmuted by' + msg.by));
+                    elem.appendChild(document.createTextNode('* ~' + msg.nick + ' was unmuted by ' + msg.by));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                     state.users[msg.nick].prefix = msg.prefix;
