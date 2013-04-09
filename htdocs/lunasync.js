@@ -279,7 +279,9 @@
                     stream = msg.stream;
 
                     // display stream title
-                    $('title').value = stream.title;
+                    $('title').innerHTML = '';
+                    $('title').appendChild(document.createTextNode(stream.title));
+                    $('titlebox').value = stream.title;
                     document.title = stream.title + ' - lunasync';
 
                     // display stream viewing URL
@@ -319,13 +321,15 @@
                         haveControl = true;
 
                         // allow changing title
-                        $('title').disabled = false;
-                        $('title').onchange = function () {
+                        $('titlebox').disabled = false;
+                        $('titlebox').onchange = function () {
                             send({
                                 type: 'change_title',
-                                title: $('title').value
+                                title: $('titlebox').value
                             });
-                            document.title = $('title').value + ' - lunasync';
+                            document.title = $('titlebox').value + ' - lunasync';
+                            $('title').innerHTML = '';
+                            $('title').appendChild(document.createTextNode($('titlebox').value));
                         };
 
                         // unhide control box
@@ -594,7 +598,9 @@
                     updatePlaylist($('playlist').selectedIndex);
                 break;
                 case 'change_title':
-                    $('title').value = msg.title;
+                    $('titlebox').value = msg.title;
+                    $('title').innerHTML = '';
+                    $('title').appendChild(document.createTextNode(msg.title));
                     document.title = msg.title + ' - lunasync';
                     elem = document.createElement('div');
                     elem.className = 'chat-mute';

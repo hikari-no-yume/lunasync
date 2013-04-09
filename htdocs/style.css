@@ -65,6 +65,10 @@ header {
     overflow: hidden;
 }
 
+#meta h2 {
+    margin: 5px 0;
+}
+
 #bouncing-luna2 {
     display: block;
     float: right;
@@ -87,7 +91,7 @@ input[type=text][disabled] {
     background-color: rgba(127, 127, 127, 0.2);
 }
 
-#title {
+#titlebox {
     width: 300px;
 }
 
