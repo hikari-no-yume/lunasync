@@ -791,16 +791,19 @@
     }
 
     function updatePlaylist(selectedIndex) {
-        var i, option;
+        var i, option, text;;
 
         $('playlist').innerHTML = '';
         for (i = 0; i < state.playlist.length; i++) {
             option = document.createElement('option');
+            text = '[' + (state.playlist[i].views || 0) + '] ';
+            text += state.playlist[i].title;
             if (state.current === i) {
-                option.appendChild(document.createTextNode('▶ '));
+                text = '▶ ' + text;
                 option.className = 'now-playing';
             }
-            option.appendChild(document.createTextNode(state.playlist[i].title));
+
+            option.appendChild(document.createTextNode(text));
             option.dataLSindex = i;
             $('playlist').appendChild(option);
         }

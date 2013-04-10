@@ -493,13 +493,15 @@ _Stream.prototype.addVideo = function (type, id) {
             that.playlist.push({
                 type: type,
                 id: id,
-                title: 'YouTube Video: ' + id
+                title: 'YouTube Video: ' + id,
+                views: 0
             });
         } else {
             that.playlist.push({
                 type: type,
                 id: id,
-                title: res
+                title: res,
+                views: 0
             });
         }
 
@@ -556,6 +558,8 @@ _Stream.prototype.stop = function (time, origin) {
 
 // cue new video
 _Stream.prototype.cue = function (newVideo) {
+    var that = this;
+
     this.playing = true;
     this.time = 0;
     this.timeFrom = secs();
@@ -568,6 +572,20 @@ _Stream.prototype.cue = function (newVideo) {
             current: newVideo
         });
     });
+
+    // update view count if valid video
+    if (this.playlist.hasOwnProperty(newVideo)) {
+        this.playlist[newVideo].views = (this.playlist[newVideo].views || 0) + 1;
+
+        // update each client
+        that.clients.forEach(function (cl) {
+            cl.send({
+                type: 'update_playlist',
+                playlist: that.playlist,
+                current: that.current
+            });
+        });
+    }
 
     saveStreams();
 };
