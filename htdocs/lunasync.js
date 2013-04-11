@@ -277,6 +277,12 @@
         $('chatlog').scrollTop = $('chatlog').scrollHeight;
     }
 
+    // homepage
+    function initHome() {
+        // unhide home page
+        $('homepage').className = '';
+    }
+
     function initBasic() {
         $('create-new').onclick = function () {
             var title;
