@@ -11,47 +11,8 @@
         <button id=create-new>Create new stream</button>
     </header>
 
-    <article id=homepage class=unloaded>
+    <article id=homepage>
         <img src=luna_right_jump.gif alt="">lunasync lets you make synced video playlists ("streams"), where everyone sees the same video at the same time! It was created to replace the late SynchTube. Currently, you can add YouTube videos and twitch.tv streams to playlists. Click "Create new stream" to get started.
-    </article>
-
-    <article id=page404 class=unloaded>
-        404 - luna not found. This page either never existed or no longer existed, are you sure you typed the URL right?
-    </article>
-
-    <article id=viewpage class=unloaded>
-        <div id=meta>
-            <img src=luna_left_jump.gif id=bouncing-luna2 alt="">
-            <h2 id=title>Loading...</h2>
-            Edit title: <input disabled type=text id=titlebox value="loading..."><br>
-            Viewing link: <input disabled type=text value="loading..." id=view-link><br>
-            <div id=control class=unloaded>
-                You have control of the stream.<br>
-                Stream control link : <input disabled type=text value="loading..." id=control-link> (be careful who you share this with, and keep hold of it - it lets you control the stream)
-            </div>
-        </div>
-        <div id=viewer>
-            <div id=playlist-holder>
-                <div id=buttons>
-                    <button disabled id=rm-button>Remove</button> <button disabled id=play-button>Play</button> <button disabled id=re-sync-btn>Re-sync</button> <button disabled id=move-up-btn>Move up</button> <button disabled id=move-down-btn>Move down</button> <label><input disabled type=checkbox id=shuffle> shuffle</label><br>
-                    <input disabled type=text placeholder="search/add YT or twitch URL (Enter)" id=add-url> <div id=video-count></div>
-                </div>
-                <select disabled multiple id=playlist>
-                    <option>loading...</option>
-                </select>
-            </div>
-            <div id=player></div>
-            <div id=chat>
-                <div id=users-online></div>
-                <div id=chatlog></div>
-                <div id=chat-buttons>
-                    <button disabled id=login-btn>Login to chat</button>
-                    <input type=text placeholder="loading..." id=chatbox class=unloaded>
-                    <button class=unloaded id=logout-btn>Logout</button>
-                </div>
-            </div>
-        </div>
-        <div id=poll class=unloaded></div>
     </article>
 
     <footer>
@@ -80,3 +41,39 @@
 <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
 <script src=underscore-min-1.4.4.js></script>
 <script src=lunasync.js></script>
+
+<!-- templates -->
+<script type="text/html" id=viewpage-template>
+    <div id=meta>
+        <img src=luna_left_jump.gif id=bouncing-luna2 alt="">
+        <h2 id=title>Loading...</h2>
+        Edit title: <input disabled type=text id=titlebox value="loading..."><br>
+        Viewing link: <input disabled type=text value="loading..." id=view-link><br>
+        <div id=control class=unloaded>
+            You have control of the stream.<br>
+            Stream control link : <input disabled type=text value="loading..." id=control-link> (be careful who you share this with, and keep hold of it - it lets you control the stream)
+        </div>
+    </div>
+    <div id=viewer>
+        <div id=playlist-holder>
+            <div id=buttons>
+                <button disabled id=rm-button>Remove</button> <button disabled id=play-button>Play</button> <button disabled id=re-sync-btn>Re-sync</button> <button disabled id=move-up-btn>Move up</button> <button disabled id=move-down-btn>Move down</button> <label><input disabled type=checkbox id=shuffle> shuffle</label><br>
+                <input disabled type=text placeholder="search/add YT or twitch URL (Enter)" id=add-url> <div id=video-count></div>
+            </div>
+            <select disabled multiple id=playlist>
+                <option>loading...</option>
+            </select>
+        </div>
+        <div id=player></div>
+        <div id=chat>
+            <div id=users-online></div>
+            <div id=chatlog></div>
+            <div id=chat-buttons>
+                <button disabled id=login-btn>Login to chat</button>
+                <input type=text placeholder="loading..." id=chatbox class=unloaded>
+                <button class=unloaded id=logout-btn>Logout</button>
+            </div>
+        </div>
+    </div>
+    <div id=poll class=unloaded></div>
+</script>

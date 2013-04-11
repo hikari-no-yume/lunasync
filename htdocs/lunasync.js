@@ -279,8 +279,7 @@
 
     // homepage
     function initHome() {
-        // unhide home page
-        $('homepage').className = '';
+        // do nothing, default page state is homepage
     }
 
     function initBasic() {
@@ -322,8 +321,8 @@
     function initView(id, control) {
         var url;
 
-        // unhide view page
-        $('viewpage').className = '';
+        // replace homepage with loading message
+        $('homepage').innerHTML = 'Connecting...';
 
         socket = new WebSocket('ws://' + API_SERVER, ['lunasync']);
         socket.onopen = function () {
@@ -348,6 +347,9 @@
 
             switch (msg.type) {
                 case 'stream_info':
+                    // replace homepage with viewing page template
+                    $('homepage').outerHTML = '<div id=viewpage>' + $('viewpage-template').innerHTML + '</div>';
+                
                     stream = msg.stream;
 
                     // display stream title
@@ -838,8 +840,7 @@
                 break;
                 case 'error':
                     if (msg.error === 'not_found') {
-                        document.title = 'stream not found - lunasync';
-                        $('viewpage').innerHTML = 'Error: no such stream exists. Did you copy the URL correctly?';
+                        init404();
                     } else {
                         $('viewpage').innerHTML = 'Error communicating with server, lost connection:\n' + msg.error;
                     }
@@ -852,8 +853,8 @@
     // "404" page
     function init404() {
         document.title = '404 not found - lunasync';
-        // unhide 404 page
-        $('page404').className = '';
+        // replace homepage with 404 message
+        $('homepage').innerHTML = '404 - luna not found. This page either never existed or no longer existed, are you sure you typed the URL right?';
     }
 
     function updatePlaylist(selectedIndex) {
