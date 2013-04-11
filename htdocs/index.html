@@ -34,7 +34,7 @@
             <div id=playlist-holder>
                 <div id=buttons>
                     <button disabled id=rm-button>Remove</button> <button disabled id=play-button>Play</button> <button disabled id=re-sync-btn>Re-sync</button> <button disabled id=move-up-btn>Move up</button> <button disabled id=move-down-btn>Move down</button> <label><input disabled type=checkbox id=shuffle> shuffle</label><br>
-                    <input disabled type=text placeholder="search/add YouTube URL (Enter)" id=add-url> <div id=video-count></div>
+                    <input disabled type=text placeholder="search/add YT or twitch URL (Enter)" id=add-url> <div id=video-count></div>
                 </div>
                 <select disabled multiple id=playlist>
                     <option>loading...</option>
@@ -78,8 +78,5 @@
 </script>
 <script src="https://login.persona.org/include.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-<script>
-swfobject.embedSWF("http://www.youtube.com/v/hCVGg1YDGhw?enablejsapi=1&version=3", "player", "788", "480", "8", null, null, {allowScriptAccess: 'always'});
-</script>
 <script src=underscore-min-1.4.4.js></script>
 <script src=lunasync.js></script>

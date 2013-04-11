@@ -41,12 +41,27 @@ function generateSecret() {
 
 // fetches YouTube video title
 function getVideoTitle(type, id, callback) {
-    if(type != "youtube") return;
-    console.log('Fetching video title for: ' + id);
+    var host, path;
+
+    switch (type) {
+        case 'youtube':
+            host = 'www.youtube.com';
+            path = '/watch?v=' + id;
+            break;
+        case 'twitch':
+            host = 'www.twitch.tv';
+            path = '/' + id;
+            break;
+        default:
+            return callback(false);
+            break;
+    }
+
+    console.log('Fetching video title for: [' + type + '] ' + id);
     http.get({
-        host: 'www.youtube.com',
+        host: host,
         port: 80,
-        path: '/watch?v=' + id
+        path: path
     }, function (res) {
         var data = '';
         res.setEncoding('utf8');
@@ -493,7 +508,7 @@ _Stream.prototype.addVideo = function (type, id) {
             that.playlist.push({
                 type: type,
                 id: id,
-                title: 'YouTube Video: ' + id,
+                title: type + ': ' + id,
                 views: 0
             });
         } else {

@@ -144,6 +144,10 @@ input[type=text][disabled] {
     background: none;
 }
 
+#add-url {
+    width: 100%;
+}
+
 .now-playing {
     background-color: rgba(255, 127, 0, 0.5);
 }

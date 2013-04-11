@@ -4,7 +4,7 @@
     var API_SERVER = window.location.hostname + ':9003',
         SITE_URL = 'http://lunasync.ajf.me';
 
-    var mode, socket, player, ytReady = false, errored = false, inFocus = true;
+    var mode, socket, ytPlayer, ytReady = false, twitchReady = false, currentPlayerType = '', errored = false, inFocus = true, ytEventQueue = [];
 
     var state = {
         playing: false,
@@ -18,13 +18,6 @@
     function $(id) {
         return document.getElementById(id);
     }
-
-    window.onYouTubePlayerReady = function () {
-        ytReady = true;
-        player = $('player');
-        // reload page if youtube player reloads to avoid initialising twice
-        window.onYouTubePlayerReady = function () { window.location.reload(); };
-    };
 
     window.onfocus = function () {
         inFocus = true;
@@ -75,6 +68,145 @@
             init404();
         }
     };
+
+    function initYt() {
+        ytReady = twitchReady = false;
+        currentPlayerType = 'youtube';
+        $('player').innerHTML = '<div id=yt-player></div>';
+
+        window.onYouTubePlayerReady = function () {
+            var event;
+
+            ytReady = true;
+            ytPlayer = $('yt-player');
+
+            window.onStateChange = function (pstate) {
+                var cueIndex;
+
+                // if we are controlling
+                if (haveControl) {
+                    // if video paused and it was playing according to known state
+                    if (pstate === 2 /* YT.PlayerState.PAUSED */ && state.playing) {
+                        // broadcast state change
+                        send({
+                            type: 'stop',
+                            time: ytPlayer.getCurrentTime()
+                        });
+                        state.playing = false;
+                    // if video started playing and it was paused according to known state
+                    } else if (pstate === 1 /*YT.PlayerState.PLAYING*/ && !state.playing) {
+                        // broadcast state change
+                        send({
+                            type: 'play',
+                            time: ytPlayer.getCurrentTime()
+                        });
+                        state.playing = true;
+                    // if the video ended
+                    } else if (pstate === 0 /*YT.PlayerState.ENDED*/) {
+                        // if we're shuffling
+                        if (state.shuffle) {
+                            cueIndex = Math.floor(Math.random() * state.playlist.length);
+                        // in order (normal)
+                        } else {
+                            // if we haven't reached the end of the playlist
+                            if (state.current + 1 < state.playlist.length) {
+                                // cue next video
+                                cueIndex = state.current + 1;
+                            } else {
+                                // cue first video
+                                cueIndex = 0;
+                            }
+                        }
+
+                        send({
+                            type: 'cue',
+                            current: cueIndex
+                        });
+                    }
+                }
+            };
+            ytPlayer.addEventListener('onStateChange', 'onStateChange');
+
+            // clear queued events
+            while (event = ytEventQueue.pop()) {
+                executeYtEvent(event);
+            }
+        };
+
+        swfobject.embedSWF("http://www.youtube.com/v/hCVGg1YDGhw?enablejsapi=1&version=3", "yt-player", "788", "480", "8", null, null, {
+            allowScriptAccess: 'always'
+        });
+    }
+
+    function initTwitch(id) {
+        ytReady = twitchReady = false;
+        currentPlayerType = 'twitch';
+        $('player').innerHTML = '<div id=twitch-player></div>';
+
+        swfobject.embedSWF("http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + id, "twitch-player", "788", "480", "8", null, {
+            hostname: 'www.twitch.tv',
+            channel: id,
+            auto_play: 'true',
+            start_volume: '25'
+        }, {
+            allowFullScreen: 'true',
+            allowNetworking: 'all',
+            allowScriptAccess: 'always'
+        });
+    }
+
+    // execute a YouTube player event
+    function executeYtEvent(event) {
+        ytPlayer[event[0]].apply(ytPlayer, event.slice(1));
+    }
+
+    // queue YouTube player event if not initialised
+    function doYtEvent(event) {
+        if (ytReady) {
+            executeYtEvent(event);
+        } else {
+            ytEventQueue.push(event);
+        }
+    }
+
+    // cue the video that matches the state
+    function doCueCurrentVideo(initialTime) {
+        var video, event;
+
+        // check we have a video to play
+        if (state.current !== null && state.playlist.length && state.playlist[state.current]) {
+            video = state.playlist[state.current];
+
+            video.type = video.type || 'youtube';
+
+            // switch to right player type if incorrect
+            if (currentPlayerType !== video.type) {
+                switch (video.type) {
+                    case 'youtube':
+                        initYt();
+                    break;
+                    case 'twitch':
+                        initTwitch(video.id);
+                    break;
+                }
+            }       
+
+            // in YouTube's case, we need to cue video specifically after init
+            if (video.type === 'youtube') {
+                event = [];
+                if (state.playing) {
+                    event.push('loadVideoById');
+                } else {
+                    event.push('cueVideoById');
+                }
+                event.push(state.playlist[state.current].id);
+                if (initialTime) {
+                    event.push(initialTime);
+                }
+                doYtEvent(event);
+            }
+        }
+    }
 
     function doAJAX(method, url, data, callback, errback) {
         var xhr;
@@ -164,29 +296,6 @@
         };
     }
 
-    // homepage
-    function initHome() {
-        // unhide home page
-        $('homepage').className = '';
-    }
-
-    // sync viewing page
-    function initView(id, control) {
-        // unhide view page
-        $('viewpage').className = '';
-
-        if (!ytReady) {
-            window.onYouTubePlayerReady = function () {
-                player = $('player');
-                // reload page if youtube player reloads to avoid initialising twice
-                window.onYouTubePlayerReady = function () { window.location.reload(); };
-                initRestView(id, control);
-            };
-        } else {
-            initRestView(id, control);
-        }
-    }
-
     // selectedOptions support emulation for Firefox
     function selectedOptions(select) {
         var list = [], i;
@@ -203,55 +312,12 @@
         }
     }
 
-    function initRestView(id, control) {
+    // sync viewing page
+    function initView(id, control) {
         var url;
 
-        window.onStateChange = function (pstate) {
-            var cueIndex;
-
-            // if we are controlling
-            if (haveControl) {
-                // if video paused and it was playing according to known state
-                if (pstate === 2 /* YT.PlayerState.PAUSED */ && state.playing) {
-                    // broadcast state change
-                    send({
-                        type: 'stop',
-                        time: player.getCurrentTime()
-                    });
-                    state.playing = false;
-                // if video started playing and it was paused according to known state
-                } else if (pstate === 1 /*YT.PlayerState.PLAYING*/ && !state.playing) {
-                    // broadcast state change
-                    send({
-                        type: 'play',
-                        time: player.getCurrentTime()
-                    });
-                    state.playing = true;
-                // if the video ended
-                } else if (pstate === 0 /*YT.PlayerState.ENDED*/) {
-                    // if we're shuffling
-                    if (state.shuffle) {
-                        cueIndex = Math.floor(Math.random() * state.playlist.length);
-                    // in order (normal)
-                    } else {
-                        // if we haven't reached the end of the playlist
-                        if (state.current + 1 < state.playlist.length) {
-                            // cue next video
-                            cueIndex = state.current + 1;
-                        } else {
-                            // cue first video
-                            cueIndex = 0;
-                        }
-                    }
-
-                    send({
-                        type: 'cue',
-                        current: cueIndex
-                    });
-                }
-            }
-        };
-        player.addEventListener('onStateChange', 'onStateChange');
+        // unhide view page
+        $('viewpage').className = '';
 
         socket = new WebSocket('ws://' + API_SERVER, ['lunasync']);
         socket.onopen = function () {
@@ -308,13 +374,7 @@
                     $('shuffle').checked = state.shuffle;
 
                     // cue and play correct video
-                    if (state.current !== null && state.playlist.length && state.playlist[state.current]) {
-                        if (state.playing) {
-                            player.loadVideoById(state.playlist[state.current].id, stream.time);
-                        } else {
-                            player.cueVideoById(state.playlist[state.current].id, stream.time);
-                        }
-                    }
+                    doCueCurrentVideo(stream.time);
 
                     // if we have control of the stream
                     if (msg.control) {
@@ -506,7 +566,7 @@
                                     });
                                     $('add-url').value = '';
                                 } else {
-                                    alert($('add-url').value + ' is not a valid URL!');
+                                    alert($('add-url').value + ' is not a valid URL for YouTube or Twitch!');
                                 }
                                 return false;
                             }
@@ -614,22 +674,22 @@
                 case 'cue':
                     state.playing = true;
                     state.current = msg.current;
-                    if (state.current === null) {
-                        player.cueVideoById('');
-                    } else {
-                        player.loadVideoById(state.playlist[state.current].id);
-                    }
+                    doCueCurrentVideo();
                     updatePlaylist();
                 break;
                 case 'play':
-                    state.playing = true;
-                    player.seekTo(msg.time, true);
-                    player.playVideo();
+                    if (currentPlayerType === 'youtube') {
+                        state.playing = true;
+                        doYtEvent(['seekTo', msg.time, true]);
+                        doYtEvent([]);
+                    }
                 break;
                 case 'stop':
-                    state.playing = false;
-                    player.seekTo(msg.time, true);
-                    player.pauseVideo();
+                    if (currentPlayerType === 'youtube') {
+                        state.playing = false;
+                        doYtEvent(['seekTo', msg.time, true]);
+                        doYtEvent(['pauseVideo']);
+                    }
                 break;
                 case 'join':
                     elem = document.createElement('div');
@@ -911,7 +971,7 @@
     }
     function getTwitchVideoID(url) {
 	    if (url.substr(0,10) === 'twitch.tv/') {
-          return url.substr(10);
+            return url.substr(10);
         } else {
             return false;
         }
@@ -929,12 +989,12 @@
         }
 	    if (getYouTubeVideoID(url)) {
             return {
-                type: "youtube",
+                type: 'youtube',
                 id: getYouTubeVideoID(url)
             };
         } else if (getTwitchVideoID(url)) {
             return {
-                type: "twitch",
+                type: 'twitch',
                 id: getTwitchVideoID(url)
             };
         } else {
