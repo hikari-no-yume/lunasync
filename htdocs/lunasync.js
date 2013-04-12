@@ -337,7 +337,7 @@
             if (errored) {
                 return;
             }
-            $('viewpage').innerHTML = 'Error communicating with server, lost connection (server may be down, lunasync may have updated, try refreshing):\n' + err;
+            $('homepage').innerHTML = 'Error communicating with server, lost connection (server may be down, lunasync may have updated, try refreshing):\n' + err;
             errored = true;
         };
         socket.onmessage = function (event) {
@@ -842,7 +842,7 @@
                     if (msg.error === 'not_found') {
                         init404();
                     } else {
-                        $('viewpage').innerHTML = 'Error communicating with server, lost connection:\n' + msg.error;
+                        $('homepage').innerHTML = 'Error communicating with server, lost connection:\n' + msg.error;
                     }
                     errored = true;
                 break;
