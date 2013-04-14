@@ -689,7 +689,7 @@
                     if (currentPlayerType === 'youtube') {
                         state.playing = true;
                         doYtEvent(['seekTo', msg.time, true]);
-                        doYtEvent([]);
+                        doYtEvent(['playVideo']);
                     }
                 break;
                 case 'stop':
