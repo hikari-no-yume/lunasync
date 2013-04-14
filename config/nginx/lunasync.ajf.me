@@ -1,0 +1,16 @@
+server {
+    server_name lunasync.ajf.me;
+
+    access_log  /var/log/nginx/lunasync.ajf.me.access.log;
+
+    root        /var/www/lunasync.ajf.me;
+
+    location / {
+        index       index.html;
+        error_page  404 = @rewrite;
+    }
+
+    location @rewrite {
+        rewrite  .*  /index.html;
+    }
+}
