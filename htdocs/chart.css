@@ -48,6 +48,7 @@
     color: white;
     text-shadow: 1px 1px black;
     font-size: 9pt;
+    white-space: nowrap;
     -webkit-transform-origin: 0 100%;
        -moz-transform-origin: 0 100%;
         -ms-transform-origin: 0 100%;
