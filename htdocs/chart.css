@@ -45,8 +45,8 @@
 .AJFChartLabel {
     font-family: sans-serif;
     font-weight: bold;
-    color: white;
-    text-shadow: 1px 1px black;
+    color: black;
+    text-shadow: 1px 1px white;
     font-size: 7pt;
     white-space: nowrap;
     -webkit-transform-origin: 0 100%;

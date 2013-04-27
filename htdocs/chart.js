@@ -3,7 +3,7 @@
 window.AJFChart = (function (window, body) {
     'use strict';
 
-    var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
+    var colors = ['rgb(253, 90, 181)', 'rgb(249, 222, 231)', 'rgb(252, 118, 171)', 'rgb(211, 44, 136)', 'rgb(149, 216, 245)', 'rgb(255, 250, 184)'];
 
     // produces one half of the pie chart, from data
     // extracted out for DRY principle (two halves)
