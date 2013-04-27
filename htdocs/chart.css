@@ -54,9 +54,9 @@
         -ms-transform-origin: 0 100%;
          -o-transform-origin: 0 100%;
             transform-origin: 0 100%;
-    -webkit-transform: rotate(90deg) translateY(-9pt);
-       -moz-transform: rotate(90deg) translateY(-9pt);
-        -ms-transform: rotate(90deg) translateY(-9pt);
-         -o-transform: rotate(90deg) translateY(-9pt);
-            transform: rotate(90deg) translateY(-9pt);
+    -webkit-transform: rotate(90deg) translateX(-9pt);
+       -moz-transform: rotate(90deg) translateX(-9pt);
+        -ms-transform: rotate(90deg) translateX(-9pt);
+         -o-transform: rotate(90deg) translateX(-9pt);
+            transform: rotate(90deg) translateX(-9pt);
 }
