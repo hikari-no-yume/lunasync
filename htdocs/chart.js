@@ -1,8 +1,12 @@
+// AJFChart is a simple JS library that draws pie charts
+// It uses only CSS3, no SVG. Requires chart.css to be used with script.
 window.AJFChart = (function (window, body) {
     'use strict';
 
     var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
 
+    // produces one half of the pie chart, from data
+    // extracted out for DRY principle (two halves)
     var makeHalf = function (container, className, list) {
         var half, i, piece, label;
 
@@ -26,30 +30,38 @@ window.AJFChart = (function (window, body) {
         create: function (parent, width, height, items) {
             var total = 0, halftotal, runningTotal, i, container, list1 = [], list2 = [], color, label;
 
+            // empty charts don't need any segments
             if (items.length > 0) {
+                // total up the segment sizes
                 for (i = 0; i < items.length; i++) {
                     total += items[i].size;
                 }
+                // half total, total for each half
                 halftotal = total / 2;
 
+                // how far are we round the circle just now?
                 runningTotal = 0;
                 for (i = 0; i < items.length; i++) {
                     color = colors[i % colors.length];
                     label = items[i].label;
 
+                    // if we're within the first half
                     if (runningTotal < total / 2) {
                         list1.push({
                             rot: (runningTotal / halftotal) * 180,
                             color: color,
                             label: label
                         });
+                        // if we span both
                         if (runningTotal + items[i].size > total / 2) {
+                            // add dummy segment to second half
                             list2.push({
                                 rot: 0,
                                 color: color,
                                 label: ''
                             });
                         }
+                    // if we're within the second half
                     } else {
                         list2.push({
                             rot: ((runningTotal - halftotal) / halftotal) * 180,
@@ -58,6 +70,7 @@ window.AJFChart = (function (window, body) {
                         });
                     }
 
+                    // we're now further round the circle
                     runningTotal += items[i].size;
                 }
             }
