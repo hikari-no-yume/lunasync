@@ -817,7 +817,7 @@
                     // make results string
                     resultStrings = [];
                     results.forEach(function (option) {
-                        resultStrings.push(option.title + ' - ' + option.votes.length + '/' + totalVotes + ', ' + (100 * (option.votes.length / totalVotes)) + '% (' + option.votes.join(', ') + ')');
+                        resultStrings.push(option.title + ' - ' + option.votes.length + '/' + totalVotes + ', ' + (100 * (option.votes.length / totalVotes)).toFixed(1) + '% (' + option.votes.join(', ') + ')');
                     });
                     elem.appendChild(document.createTextNode('* ' + 'Poll "' + msg.title + '" closed by ' + msg.closed_by + ', results: ' + resultStrings.join('; ')));
 
@@ -826,7 +826,7 @@
                     results.forEach(function (option) {
                         if (option.votes.length) {
                             resultSegments.push({
-                                label: option.title + ' (' + (100 * (option.votes.length / totalVotes)) + '%)',
+                                label: option.title + ' (' + (100 * (option.votes.length / totalVotes)).toFixed(1) + '%)',
                                 size: option.votes.length
                             });
                         }
@@ -1028,7 +1028,7 @@
             results.forEach(function (option) {
                 if (option.votes.length) {
                     resultSegments.push({
-                        label: option.title + ' (' + (100 * (option.votes.length / totalVotes)) + '%)',
+                        label: option.title + ' (' + (100 * (option.votes.length / totalVotes)).toFixed(1) + '%)',
                         size: option.votes.length
                     });
                 }
