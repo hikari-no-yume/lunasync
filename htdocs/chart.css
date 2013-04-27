@@ -47,16 +47,16 @@
     font-weight: bold;
     color: white;
     text-shadow: 1px 1px black;
-    font-size: 9pt;
+    font-size: 7pt;
     white-space: nowrap;
     -webkit-transform-origin: 0 100%;
        -moz-transform-origin: 0 100%;
         -ms-transform-origin: 0 100%;
          -o-transform-origin: 0 100%;
             transform-origin: 0 100%;
-    -webkit-transform: rotate(90deg) translateX(-9pt);
-       -moz-transform: rotate(90deg) translateX(-9pt);
-        -ms-transform: rotate(90deg) translateX(-9pt);
-         -o-transform: rotate(90deg) translateX(-9pt);
-            transform: rotate(90deg) translateX(-9pt);
+    -webkit-transform: rotate(90deg) translateX(-7pt);
+       -moz-transform: rotate(90deg) translateX(-7pt);
+        -ms-transform: rotate(90deg) translateX(-7pt);
+         -o-transform: rotate(90deg) translateX(-7pt);
+            transform: rotate(90deg) translateX(-7pt);
 }
