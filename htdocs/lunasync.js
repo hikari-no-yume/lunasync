@@ -587,6 +587,7 @@
                                 videoData = getVideoData($('add-url').value)
                                 if (videoData) {
                                     for (i = 0; i < state.playlist.length; i++) {
+
                                         if (state.playlist[i].id === videoData.id) {
                                             $('playlist').selectedIndex = i;
                                             break;
@@ -968,7 +969,7 @@
     }
 
     function updatePoll() {
-        var i, elem, name, option, btn, poll = state.poll;
+        var i, elem, name, totalVotes, results = [], resultSegments = [], poll = state.poll;
 
         if (poll) {
             $('poll').className = '';
@@ -977,31 +978,62 @@
             elem.appendChild(document.createTextNode('Poll: ' + poll.title));
             $('poll').appendChild(elem);
             elem = document.createElement('ul');
-            for (name in poll.options) {
-                if (poll.options.hasOwnProperty(name)) {
-                    option = document.createElement('li');
-                    if (pollVote === null && chatNick !== null) {
-                        btn = document.createElement('button');
-                        btn.appendChild(document.createTextNode(name));
-                        (function (name) {
-                            btn.onclick = function () {
-                                send({
-                                    type: 'vote',
-                                    option: name
-                                });
-                                pollVote = name;
-                                updatePoll();
-                            };
-                        }(name));
-                        option.appendChild(btn);
-                    } else {
-                        option.appendChild(document.createTextNode((pollVote === name ? '▶ ' : '') + name));
-                    }
-                    option.appendChild(document.createTextNode(' (' + poll.options[name].length + ' votes - ' + poll.options[name].join(', ') + ')'));
-                    elem.appendChild(option);
+            totalVotes = 0;
+            Object.keys(poll.options).forEach(function (name) {
+                var option, btn;
+                option = document.createElement('li');
+                if (pollVote === null && chatNick !== null) {
+                    btn = document.createElement('button');
+                    btn.appendChild(document.createTextNode(name));
+                    (function (name) {
+                        btn.onclick = function () {
+                            send({
+                                type: 'vote',
+                                option: name
+                            });
+                            pollVote = name;
+                            updatePoll();
+                        };
+                    }(name));
+                    option.appendChild(btn);
+                } else {
+                    option.appendChild(document.createTextNode((pollVote === name ? '▶ ' : '') + name));
                 }
-            }
+                option.appendChild(document.createTextNode(' (' + poll.options[name].length + ' votes - ' + poll.options[name].join(', ') + ')'));
+                elem.appendChild(option);
+
+                totalVotes += poll.options[name].length;
+                // gather results into array so we can sort them
+                results.push({
+                    title: name,
+                    votes: poll.options[name]
+                });
+            });
             $('poll').appendChild(elem);
+
+            // sort
+            results.sort(function (a, b) {
+                a = a.votes.length;
+                b = b.votes.length;
+                if (a < b) {
+                    return 1;
+                } else if (a > b) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            // make results chart
+            resultSegments = [];
+            results.forEach(function (option) {
+                if (option.votes.length) {
+                    resultSegments.push({
+                        label: option.title + ' (' + (100 * (option.votes.length / totalVotes)) + '%)',
+                        size: option.votes.length
+                    });
+                }
+            });
+            AJFChart.create(elem, 200, 200, resultSegments);
         } else {
             $('poll').className = 'unloaded';
         }
