@@ -40,8 +40,22 @@
     left: 0;
     top: 0;
     padding: 2%;
+}
+
+.AJFChartLabel {
     font-family: sans-serif;
     font-weight: bold;
     color: white;
     text-shadow: 1px 1px black;
+    font-size: 8pt;
+    -webkit-transform-origin: 0 100%;
+       -moz-transform-origin: 0 100%;
+        -ms-transform-origin: 0 100%;
+         -o-transform-origin: 0 100%;
+            transform-origin: 0 100%;
+    -webkit-transform: rotate(90deg);
+       -moz-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+         -o-transform: rotate(90deg);
+            transform: rotate(90deg);
 }

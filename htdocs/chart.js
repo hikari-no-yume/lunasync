@@ -4,7 +4,7 @@ window.AJFChart = (function (window, body) {
     var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
 
     var makeHalf = function (container, className, list) {
-        var half, i, piece;
+        var half, i, piece, label;
 
         half = document.createElement('div');
         half.className = className;
@@ -13,7 +13,10 @@ window.AJFChart = (function (window, body) {
             piece.className = 'AJFChartPiece';
             piece.style.backgroundColor = list[i].color;
             piece.style.webkitTransform = piece.style.mozTransform = piece.style.msTransform = piece.style.OTransform = piece.style.transform = 'rotate(' + list[i].rot + 'deg)';
-            piece.appendChild(document.createTextNode(list[i].label));
+            label = document.createElement('div');
+            label.className = 'AJFChartLabel';
+            label.appendChild(document.createTextNode(list[i].label));
+            piece.appendChild(label);
             half.appendChild(piece);
         }
         container.appendChild(half);
