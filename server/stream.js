@@ -269,45 +269,14 @@ _Stream.prototype.openPoll = function (title, options, nick) {
 
 // closes a poll
 _Stream.prototype.closePoll = function (nick) {
-    var results, resultStrings, totalVotes; that = this;
+    var results, title;
 
     if (!this.hasPoll()) {
         throw new Error("There is no poll running.");
     }
 
-    results = [];
-    totalVotes = 0;
-
-    Object.keys(this.currentPoll.options).forEach(function (option) {
-        // total vote count
-        totalVotes += that.currentPoll.options[option].length;
-
-        // gather results into array so we can sort them
-        results.push({
-            title: option,
-            votes: that.currentPoll.options[option]
-        });
-    });
-
-    // sort
-    results.sort(function (a, b) {
-        a = a.votes.length;
-        b = b.votes.length;
-        if (a < b) {
-            return 1;
-        } else if (a > b) {
-            return -1;
-        }
-        return 0;
-    });
-
-    // make results string
-    resultStrings = [];
-    results.forEach(function (option) {
-        resultStrings.push(option.title + ' - ' + option.votes.length + '/' + totalVotes + ', ' + (100 * (option.votes.length / totalVotes)) + '% (' + option.votes.join(', ') + ')');
-    });
-    results = 'Poll "' + this.currentPoll.title + '" closed by ' + nick + ', results: ' + resultStrings.join('; ');
-
+    results = this.currentPoll.options;
+    title = this.currentPoll.title;
     this.currentPoll = null;
     saveStreams();
 
@@ -320,8 +289,10 @@ _Stream.prototype.closePoll = function (nick) {
             poll_vote: cl.poll_vote
         });
         cl.send({
-            type: 'chat_info',
-            msg: results
+            type: 'poll_results',
+            results: results,
+            title: title,
+            closed_by: nick
         });
     });
 };

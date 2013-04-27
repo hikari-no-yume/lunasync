@@ -341,7 +341,7 @@
             errored = true;
         };
         socket.onmessage = function (event) {
-            var msg, stream, elem, elem2, elem3, nick;
+            var msg, stream, elem, elem2, elem3, nick, results, totalVotes, resultStrings, resultSegments;
 
             msg = JSON.parse(event.data);
 
@@ -780,6 +780,58 @@
                     } else {
                         appendTextAutoFormat(elem, msg.msg);
                     }
+                    $('chatlog').appendChild(elem);
+                    scrollChatlog();
+                break;
+                case 'poll_results':
+                    elem = document.createElement('div');
+                    elem.className = 'chat-info';
+
+                    results = [];
+                    totalVotes = 0;
+
+                    Object.keys(msg.results).forEach(function (option) {
+                        // total vote count
+                        totalVotes += msg.results[option].length;
+
+                        // gather results into array so we can sort them
+                        results.push({
+                            title: option,
+                            votes: msg.results[option]
+                        });
+                    });
+
+                    // sort
+                    results.sort(function (a, b) {
+                        a = a.votes.length;
+                        b = b.votes.length;
+                        if (a < b) {
+                            return 1;
+                        } else if (a > b) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+
+                    // make results string
+                    resultStrings = [];
+                    results.forEach(function (option) {
+                        resultStrings.push(option.title + ' - ' + option.votes.length + '/' + totalVotes + ', ' + (100 * (option.votes.length / totalVotes)) + '% (' + option.votes.join(', ') + ')');
+                    });
+                    elem.appendChild(document.createTextNode('* ' + 'Poll "' + msg.title + '" closed by ' + msg.closed_by + ', results: ' + resultStrings.join('; ')));
+
+                    // make results chart
+                    resultSegments = [];
+                    results.forEach(function (option) {
+                        if (option.votes.length) {
+                            resultSegments.push({
+                                label: option.title + ' (' + (100 * (option.votes.length / totalVotes)) + '%)',
+                                size: option.votes.length
+                            });
+                        }
+                    });
+                    AJFChart.create(elem, 200, 200, resultSegments);
+
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;
