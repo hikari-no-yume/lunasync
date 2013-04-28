@@ -56,8 +56,15 @@ header {
     clear: both;
     overflow: hidden;
 }
-#homepage img {
+
+#homepage-luna {
     float: left;
+}
+
+#features {
+    max-width: 100%;
+    clear: both;
+    display: block;
 }
 
 #meta {
