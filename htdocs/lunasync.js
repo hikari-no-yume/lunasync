@@ -587,20 +587,13 @@
                                 videoData = getVideoData($('add-url').value)
                                 if (videoData) {
                                     for (i = 0; i < state.playlist.length; i++) {
-
-                                        if (state.playlist[i].id === videoData.id) {
-                                            $('playlist').selectedIndex = i;
-                                            break;
-                                        }
+                                        $('playlist').options[i].selected = (state.playlist[i].id === videoData.id);
                                     }
                                 // otherwise do regex search
                                 } else {
                                     re = new RegExp($('add-url').value, 'gi');
                                     for (i = 0; i < state.playlist.length; i++) {
-                                        if (state.playlist[i].title.match(re)) {
-                                            $('playlist').selectedIndex = i;
-                                            break;
-                                        }
+                                        $('playlist').options[i].selected = !!(state.playlist[i].title.match(re));
                                     }
                                 }
                             }
