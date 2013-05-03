@@ -12,7 +12,8 @@
         playlist: [],
         poll: null,
         users: {},
-        viewers: 0
+        viewers: 0,
+        title: ''
     }, haveControl = false, pollVote = null, chatNick = null;
 
     var inFocus = true, unreadMessages = 0;
@@ -24,19 +25,21 @@
     window.onfocus = function () {
         inFocus = true;
         if (unreadMessages) {
-            document.title = stream.title + ' - lunasync';
+            document.title = state.title + ' - lunasync';
             unreadMessages = 0;
         }
+        console.log('inFocus: ' + inFocus);
     };
 
     window.onblur = function () {
         inFocus = false;
+        console.log('inFocus: ' + inFocus);
     };
 
     function newMessage () {
         if (!inFocus) {
             unreadMessages++;
-            document.title = '(' + unreadMessages + ') ' + stream.title + ' - lunasync';
+            document.title = '(' + unreadMessages + ') ' + state.title + ' - lunasync';
         }
     }
 
@@ -370,6 +373,7 @@
                     $('title').appendChild(document.createTextNode(stream.title));
                     $('titlebox').value = stream.title;
                     document.title = stream.title + ' - lunasync';
+                    state.title = stream.title;
 
                     // display stream viewing URL
                     $('view-link').value = SITE_URL + '/' + stream.id;
@@ -408,6 +412,7 @@
                                 type: 'change_title',
                                 title: $('titlebox').value
                             });
+                            state.title = $('titlebox').value;
                             document.title = $('titlebox').value + ' - lunasync';
                             $('title').innerHTML = '';
                             $('title').appendChild(document.createTextNode($('titlebox').value));
@@ -675,6 +680,7 @@
                 break;
                 case 'change_title':
                     $('titlebox').value = msg.title;
+                    state.title = msg.title;
                     $('title').innerHTML = '';
                     $('title').appendChild(document.createTextNode(msg.title));
                     document.title = msg.title + ' - lunasync';
