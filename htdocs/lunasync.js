@@ -22,27 +22,6 @@
         return document.getElementById(id);
     }
 
-    window.onfocus = function () {
-        inFocus = true;
-        if (unreadMessages) {
-            document.title = state.title + ' - lunasync';
-            unreadMessages = 0;
-        }
-        console.log('inFocus: ' + inFocus);
-    };
-
-    window.onblur = function () {
-        inFocus = false;
-        console.log('inFocus: ' + inFocus);
-    };
-
-    function newMessage () {
-        if (!inFocus) {
-            unreadMessages++;
-            document.title = '(' + unreadMessages + ') ' + state.title + ' - lunasync';
-        }
-    }
-
     window.onload = function () {
         var id, control;
 
@@ -292,6 +271,22 @@
     function scrollChatlog() {
         $('chatlog').scrollTop = $('chatlog').scrollHeight;
     }
+
+    function newMessage() {
+        if (!inFocus) {
+            unreadMessages++;
+            document.title = '(' + unreadMessages + ') ' + state.title + ' - lunasync';
+        }
+    }
+
+    function onChangeVisibility() {
+        inFocus = !(document.hidden || document.webkitHidden || document.mozHidden || document.msHidden);
+        console.log(inFocus);
+        if (unreadMessages && inFocus) {
+            document.title = state.title + ' - lunasync';
+            unreadMessages = 0;
+        }
+    };
 
     // homepage
     function initHome() {
@@ -672,6 +667,15 @@
                         }
                     });
                     window.onresize = scrollChatlog;
+                    if (document.hasOwnProperty('hidden')) {
+                        document.addEventListener('visibilitychange', onChangeVisibility);
+                    } else if (document.hasOwnProperty('mozHidden')) {
+                        document.addEventListener('mozvisibilitychange', onChangeVisibility);
+                    } else if (document.hasOwnProperty('msHidden')) {
+                        document.addEventListener('msvisibilitychange', onChangeVisibility);
+                    } else if (document.hasOwnProperty('webkitHidden')) {
+                        document.addEventListener('webkitvisibilitychange', onChangeVisibility);
+                    }
                 break;
                 case 'update_playlist':
                     state.playlist = msg.playlist;
