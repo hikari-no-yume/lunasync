@@ -4,7 +4,7 @@
     var API_SERVER = window.location.hostname + ':9003',
         SITE_URL = 'http://lunasync.ajf.me';
 
-    var mode, socket, ytPlayer, ytReady = false, twitchReady = false, currentPlayerType = '', errored = false, inFocus = true, ytEventQueue = [];
+    var mode, socket, ytPlayer, ytReady = false, twitchReady = false, currentPlayerType = '', errored = false, ytEventQueue = [];
 
     var state = {
         playing: false,
@@ -15,17 +15,30 @@
         viewers: 0
     }, haveControl = false, pollVote = null, chatNick = null;
 
+    var inFocus = true, unreadMessages = 0;
+
     function $(id) {
         return document.getElementById(id);
     }
 
     window.onfocus = function () {
         inFocus = true;
+        if (unreadMessages) {
+            document.title = stream.title + ' - lunasync';
+            unreadMessages = 0;
+        }
     };
 
     window.onblur = function () {
         inFocus = false;
     };
+
+    function newMessage () {
+        if (!inFocus) {
+            unreadMessages++;
+            document.title = '(' + unreadMessages + ') ' + stream.title + ' - lunasync';
+        }
+    }
 
     window.onload = function () {
         var id, control;
@@ -587,6 +600,7 @@
                                 videoData = getVideoData($('add-url').value)
                                 if (videoData) {
                                     for (i = 0; i < state.playlist.length; i++) {
+
                                         $('playlist').options[i].selected = (state.playlist[i].id === videoData.id);
                                     }
                                 // otherwise do regex search
@@ -703,6 +717,7 @@
                         prefix: msg.prefix
                     };
                     updateUsersOnline();
+                    newMessage();                    
                 break;
                 case 'leave':
                     elem = document.createElement('div');
@@ -712,6 +727,7 @@
                     scrollChatlog();
                     delete state.users[msg.nick];
                     updateUsersOnline();
+                    newMessage();
                 break;
                 case 'mute':
                     elem = document.createElement('div');
@@ -724,6 +740,7 @@
                         $('chatbox').disabled = true;
                     }
                     updateUsersOnline();
+                    newMessage();
                 break;
                 case 'unmute':
                     elem = document.createElement('div');
@@ -736,6 +753,7 @@
                         $('chatbox').disabled = false;
                     }
                     updateUsersOnline();
+                    newMessage();
                 break;
                 case 'poll':
                     state.poll = msg.poll;
@@ -776,6 +794,7 @@
                     }
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
+                    newMessage();
                 break;
                 case 'poll_results':
                     elem = document.createElement('div');
@@ -828,6 +847,7 @@
 
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
+                    newMessage();
                 break;
                 case 'chat_info':
                     elem = document.createElement('div');
@@ -835,6 +855,7 @@
                     elem.appendChild(document.createTextNode('* ' + msg.msg));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
+                    newMessage();
                 break;
                 case 'nick_chosen':
                     $('chatbox').placeholder = 'say something (press enter)';
