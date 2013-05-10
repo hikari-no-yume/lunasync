@@ -878,6 +878,14 @@
                     $('logout-btn').onclick = function () {
                         navigator.id.logout();
                     };
+                    $('chat-btn').className = '';
+                    $('chat-btn').onclick = function () {
+                        send({
+                            type: 'msg',
+                            msg: $('chatbox').value
+                        });
+                        $('chatbox').value = '';
+                    };
                     updatePoll();
                 break;
                 case 'nick_in_use':
