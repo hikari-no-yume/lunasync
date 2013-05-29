@@ -654,13 +654,14 @@
                                     nick: $('chatbox').value
                                 });
                                 $('chatbox').disabled = true;
-                            } else {
+                                $('chatbox').value = '';
+                            } else if ($('chatbox').value) {
                                 send({
                                     type: 'msg',
                                     msg: $('chatbox').value
                                 });
+                                $('chatbox').value = '';
                             }
-                            $('chatbox').value = '';
                             return false;
                         }
                     };
@@ -906,11 +907,13 @@
                     };
                     $('chat-btn').className = '';
                     $('chat-btn').onclick = function () {
-                        send({
-                            type: 'msg',
-                            msg: $('chatbox').value
-                        });
-                        $('chatbox').value = '';
+                        if ($('chatbox').value) {
+                            send({
+                                type: 'msg',
+                                msg: $('chatbox').value
+                            });
+                            $('chatbox').value = '';
+                        }
                     };
                     updatePoll();
                 break;
