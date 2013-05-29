@@ -369,6 +369,8 @@
                     $('titlebox').value = stream.title;
                     document.title = stream.title + ' - lunasync';
                     state.title = stream.title;
+                    $('cssbox').value = stream.css;
+                    $('customcss').innerHTML = stream.css;
 
                     // display stream viewing URL
                     $('view-link').value = SITE_URL + '/' + stream.id;
@@ -411,6 +413,18 @@
                             document.title = $('titlebox').value + ' - lunasync';
                             $('title').innerHTML = '';
                             $('title').appendChild(document.createTextNode($('titlebox').value));
+                        };
+
+                        // allow changing css
+                        $('cssbox').disabled = false;
+                        $('cssbox').onchange = function () {
+                            send({
+                                type: 'change_css',
+                                css: $('cssbox').value
+
+                            });
+                            state.css = $('cssbox').value;
+                            $('customcss').innerHTML = $('cssbox').value;
                         };
 
                         // unhide control box
@@ -691,6 +705,16 @@
                     elem = document.createElement('div');
                     elem.className = 'chat-title-change';
                     elem.appendChild(document.createTextNode('* Title was changed to "' + msg.title + '"' + (msg.by ? (' by ' + msg.by) : '')));
+                    $('chatlog').appendChild(elem);
+                    scrollChatlog();
+                break;
+                case 'change_css':
+                    $('cssbox').value = msg.css;
+                    state.css = msg.css;
+                    $('customcss').innerHTML = msg.css;
+                    elem = document.createElement('div');
+                    elem.className = 'chat-css-change';
+                    elem.appendChild(document.createTextNode('* CSS was changed' + (msg.by ? (' by ' + msg.by) : '')));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
                 break;

@@ -242,7 +242,7 @@ input[type=text][disabled] {
     color: maroon;
 }
 
-.chat-mute, .chat-unmute, .chat-title-change, .chat-poll-results {
+.chat-mute, .chat-unmute, .chat-title-change, .chat-css-change, .chat-poll-results {
     color: silver;
 }
 

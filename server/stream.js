@@ -97,6 +97,7 @@ function _Stream(obj) {
     this.title = obj.title;
     this.id = obj.id;
     this.secret = obj.secret;
+    this.css = obj.css || '';
     this.playing = obj.playing || false;
     this.current = ((obj.current === 0) ? 0 : (obj.current || null));
     this.time = obj.time || null;
@@ -115,6 +116,7 @@ _Stream.prototype.toJSON = function () {
         title: this.title,
         id: this.id,
         secret: this.secret,
+        css: this.css,
         playing: this.playing,
         current: this.current,
         time: this.time,
@@ -448,6 +450,22 @@ _Stream.prototype.changeTitle = function (title, nick) {
         cl.send({
             type: 'change_title',
             title: title,
+            by: nick
+        });
+    });
+
+    saveStreams();
+};
+
+// changes CSS
+_Stream.prototype.changeCSS = function (css, nick) {
+    this.css = css;
+
+    // update each client
+    this.clients.forEach(function (cl) {
+        cl.send({
+            type: 'change_css',
+            css: css,
             by: nick
         });
     });

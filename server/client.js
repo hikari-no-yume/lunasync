@@ -498,6 +498,19 @@ function hookEvents (client) {
 
                 client.stream.changeTitle(msg.title, client.chat_nick);
             break;
+            case 'change_css':
+                // check that they have control of stream
+                if (!client.control) {
+                    client.send({
+                        type: 'error',
+                        error: 'not_control'
+                    });
+                    client.conn.close();
+                    return;
+                }
+
+                client.stream.changeCSS(msg.css, client.chat_nick);
+            break;
             case 'change_shuffle':
                 // check that they have control of stream
                 if (!client.control) {
@@ -602,6 +615,7 @@ function Client (conn, stream, secret) {
         stream: {
             title: stream.title,
             id: stream.id,
+            css: stream.css,
             playing: stream.playing,
             current: stream.current,
             time: stream.getRelativeTime(),
