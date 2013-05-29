@@ -11,7 +11,7 @@ html, body {
 }
 
 body {
-    background-image: url(bg.svg);
+    background-image: url(/media/bg.svg);
     background-color: rgb(95, 49, 132);
     background-size: cover;
     padding: 0;

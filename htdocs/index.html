@@ -1,24 +1,25 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>lunasync</title>
-<link rel=stylesheet href=style.css>
-<link rel="shortcut icon" href=logo.png>
-<link rel=icon href=logo.png>
+<link rel=stylesheet href=/style.css>
+<link rel="shortcut icon" href=/media/logo.png>
+<link rel=icon href=/media/logo.png>
 
 <div id=site class=unloaded>
     <header>
-        <h1><a href=/><img src=logo.png alt=""> lunasync</a></h1>
+        <h1><a href=/><img src=/media/logo.png alt=""> lunasync</a></h1>
         <button id=create-new>Create new stream</button>
     </header>
 
     <article id=homepage>
-        <p><img src=luna_right_jump.gif alt="" id=homepage-luna>lunasync lets you make synced video playlists ("streams"), where everyone sees the same video at the same time! It was created to replace the late SynchTube. Currently, you can add YouTube videos and twitch.tv streams to playlists. Click "Create new stream" to get started.</p>
-        <img src=features.png alt="Diagram of lunasync features" id=features>
+        <p><img src=/media/luna_right_jump.gif alt="" id=homepage-luna>lunasync lets you make synced video playlists ("streams"), where everyone sees the same video at the same time! It was created to replace the late SynchTube. Currently, you can add YouTube videos and twitch.tv streams to playlists. Click "Create new stream" to get started.</p>
+        <img src=/media/features.png alt="Diagram of lunasync features" id=features>
     </article>
 
     <footer>
         &copy; 2013 <a href="http://ajf.me/">Andrea Faulds</a>. <a href="https://github.com/TazeTSchnitzel/lunasync">Fork lunasync on GitHub!</a><br>
         Background is from <a href="http://quasdar.deviantart.com/art/Equestria-at-Night-263381180">here</a>, &copy; <a href="http://quasdar.deviantart.com/">Quasdar on DeviantArt</a>.<br>
+        Icons from <a href="http://adamwhitcroft.com/batch/">Batch</a>, &copy; <a href="https://twitter.com/adamwhitcroft">@adamwhitcroft</a>.<br>
         Logo derived from My Little Pony: Friendship is Magic Season 1 Episode 1, &copy; 2011 Hasbro, Inc.<br>
         Bouncing Luna animation from Desktop Ponies, &copy; its respective authors.
     </footer>
@@ -48,7 +49,7 @@
 <!-- templates -->
 <script type="text/html" id=viewpage-template>
     <div id=meta>
-        <img src=luna_left_jump.gif id=bouncing-luna2 alt="">
+        <img src=/media/luna_left_jump.gif id=bouncing-luna2 alt="">
         <h2 id=title>Loading...</h2>
         Edit title: <input disabled type=text id=titlebox value="loading..."><br>
         Viewing link: <input disabled type=text value="loading..." id=view-link><br>
@@ -60,7 +61,13 @@
     <div id=viewer>
         <div id=playlist-holder>
             <div id=buttons>
-                <button disabled id=rm-button>Remove</button> <button disabled id=play-button>Play</button> <button disabled id=re-sync-btn>Re-sync</button> <button disabled id=move-up-btn>Move up</button> <button disabled id=move-down-btn>Move down</button> <label><input disabled type=checkbox id=shuffle> shuffle</label><br>
+                <button disabled id=play-button title=Play><img src=/media/play.png alt=Play></button>
+                <button disabled id=move-up-btn title="Move up"><img src=/media/arrow-up.png alt="Move up"></button>
+                <button disabled id=move-down-btn title="Move down"><img src=/media/arrow-down.png alt="Move down"></button>
+                <button disabled id=rm-button title=Remove><img src=/media/delete.png alt=Remove></button>
+                <br>
+                <button disabled id=re-sync-btn title=Re-sync><img src=/media/refresh.png alt-Re-sync> Re-sync</button>
+                <label><input disabled type=checkbox id=shuffle> shuffle</label><br>
                 <input disabled type=text placeholder="search/add YT or twitch URL (Enter)" id=add-url> <div id=video-count></div>
             </div>
             <select disabled multiple id=playlist>
@@ -72,9 +79,9 @@
             <div id=users-online></div>
             <div id=chatlog></div>
             <div id=chat-buttons>
-                <button disabled id=login-btn>Login to chat</button>
+                <button disabled id=login-btn title="Log in to chat"><img src=/media/user-card.png alt="Log in to chat"> Log in to chat</button>
                 <input type=text placeholder="loading..." id=chatbox class=unloaded>
-                <button class=unloaded id=chat-btn><img src=chatbubble.png alt="Send message"></button> <button class=unloaded id=logout-btn>Logout</button>
+                <button class=unloaded id=chat-btn title="Send message"><img src=/media/speech-bubble-left-2.png alt="Send message"></button> <button class=unloaded id=logout-btn title="Log out"><img src=/media/user-card.png alt="Log out"> Log out</button>
             </div>
         </div>
     </div>
