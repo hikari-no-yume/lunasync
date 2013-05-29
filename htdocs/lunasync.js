@@ -689,7 +689,7 @@
                     $('title').appendChild(document.createTextNode(msg.title));
                     document.title = msg.title + ' - lunasync';
                     elem = document.createElement('div');
-                    elem.className = 'chat-mute';
+                    elem.className = 'chat-title-change';
                     elem.appendChild(document.createTextNode('* Title was changed to "' + msg.title + '"' + (msg.by ? (' by ' + msg.by) : '')));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -754,7 +754,7 @@
                 break;
                 case 'unmute':
                     elem = document.createElement('div');
-                    elem.className = 'chat-mute';
+                    elem.className = 'chat-unmute';
                     elem.appendChild(document.createTextNode('* ~' + msg.nick + ' was unmuted by ' + msg.by));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -808,7 +808,7 @@
                 break;
                 case 'poll_results':
                     elem = document.createElement('div');
-                    elem.className = 'chat-info';
+                    elem.className = 'chat-poll-results';
 
                     results = [];
                     totalVotes = 0;
@@ -989,10 +989,11 @@
             var option, user = state.users[nick];
 
             option = document.createElement('li');
+            option.className = 'user';
             if (user.prefix === '@') {
-                option.className = 'user-op';
+                option.className += ' user-op';
             } else if (user.prefix === '~') {
-                option.className = 'user-muted';
+                option.className += ' user-muted';
             }
             option.appendChild(document.createTextNode(user.prefix + nick));
             elem.appendChild(option);
