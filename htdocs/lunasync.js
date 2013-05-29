@@ -235,7 +235,7 @@
             if ((pos = text.indexOf('http://')) !== -1 || (pos = text.indexOf('https://')) !== -1) {
                 pos2 = text.indexOf(' ', pos);
                 anchor = document.createElement('a');
-                anchor.className = 'chat-link';
+                anchor.className = 'chat-format-link';
                 anchor.target = '_blank';
                 if (pos2 === -1) {
                     appendText(parent, text.substr(0, pos));
@@ -252,7 +252,7 @@
                 parent.appendChild(anchor);
             } else if ((pos = text.indexOf('[spoiler]')) !== -1 && (pos2 = text.indexOf('[/spoiler]', pos)) !== -1) {
                 spoiler = document.createElement('span');
-                spoiler.className = 'chat-spoiler';
+                spoiler.className = 'chat-format-spoiler';
                 appendText(parent, text.substr(0, pos));
                 appendText(spoiler, text.substr(pos + 9, pos2 - (pos + 9)));
                 parent.appendChild(spoiler);
@@ -703,7 +703,7 @@
                     $('title').appendChild(document.createTextNode(msg.title));
                     document.title = msg.title + ' - lunasync';
                     elem = document.createElement('div');
-                    elem.className = 'chat-title-change';
+                    elem.className = 'chat chat-title-change';
                     elem.appendChild(document.createTextNode('* Title was changed to "' + msg.title + '"' + (msg.by ? (' by ' + msg.by) : '')));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -713,7 +713,7 @@
                     state.css = msg.css;
                     $('customcss').innerHTML = msg.css;
                     elem = document.createElement('div');
-                    elem.className = 'chat-css-change';
+                    elem.className = 'chat chat-css-change';
                     elem.appendChild(document.createTextNode('* CSS was changed' + (msg.by ? (' by ' + msg.by) : '')));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -743,7 +743,7 @@
                 break;
                 case 'join':
                     elem = document.createElement('div');
-                    elem.className = 'chat-join';
+                    elem.className = 'chat chat-join';
                     elem.appendChild(document.createTextNode('* ' + msg.prefix + msg.nick + ' joined chat'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -755,7 +755,7 @@
                 break;
                 case 'leave':
                     elem = document.createElement('div');
-                    elem.className = 'chat-leave';
+                    elem.className = 'chat chat-leave';
                     elem.appendChild(document.createTextNode('* ' + msg.prefix + msg.nick + ' left chat'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -765,7 +765,7 @@
                 break;
                 case 'mute':
                     elem = document.createElement('div');
-                    elem.className = 'chat-mute';
+                    elem.className = 'chat chat-mute';
                     elem.appendChild(document.createTextNode('* ' + msg.nick + ' was muted by ' + msg.by));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -778,7 +778,7 @@
                 break;
                 case 'unmute':
                     elem = document.createElement('div');
-                    elem.className = 'chat-unmute';
+                    elem.className = 'chat chat-unmute';
                     elem.appendChild(document.createTextNode('* ~' + msg.nick + ' was unmuted by ' + msg.by));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -806,11 +806,13 @@
                 case 'action':
                     elem = document.createElement('div');
                     elem2 = document.createElement('span');
-                    elem2.className = 'chat-nick';
+                    elem2.className = 'chat-format-nick';
                     elem2.appendChild(document.createTextNode(msg.nick));
                     if (msg.type === 'action') {
                         elem.appendChild(document.createTextNode('* '));
-                        elem.className = 'chat-action';
+                        elem.className = 'chat chat-action';
+                    } else {
+                        elem.className = 'chat chat-msg';
                     }
                     elem.appendChild(elem2);
                     if (msg.type === 'msg') {
@@ -820,7 +822,7 @@
                     }
                     if (msg.msg[0] === '>') {
                         elem3 = document.createElement('span');
-                        elem3.className = 'chat-greentext';
+                        elem3.className = 'chat-format-greentext';
                         appendTextAutoFormat(elem3, msg.msg);
                         elem.appendChild(elem3);
                     } else {
@@ -832,7 +834,7 @@
                 break;
                 case 'poll_results':
                     elem = document.createElement('div');
-                    elem.className = 'chat-poll-results';
+                    elem.className = 'chat chat-poll-results';
 
                     results = [];
                     totalVotes = 0;
@@ -885,7 +887,7 @@
                 break;
                 case 'chat_info':
                     elem = document.createElement('div');
-                    elem.className = 'chat-info';
+                    elem.className = 'chat chat-info';
                     elem.appendChild(document.createTextNode('* ' + msg.msg));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();
@@ -938,7 +940,7 @@
                 break;
                 case 'update':
                     elem = document.createElement('div');
-                    elem.className = 'chat-update';
+                    elem.className = 'chat chat-update';
                     elem.appendChild(document.createTextNode('* lunasync is updating, page will refresh in 5 seconds'));
                     $('chatlog').appendChild(elem);
                     scrollChatlog();

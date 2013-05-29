@@ -254,25 +254,25 @@ input[type=text][disabled] {
     color: fuchsia;
 }
 
-.chat-greentext {
+.chat-format-greentext {
     color: rgb(120, 153, 34);
 }
 
-.chat-spoiler {
+.chat-format-spoiler {
     color: black;
     background-color: black;
 }
 
-.chat-spoiler::before {
+.chat-format-spoiler::before {
     color: red;
     content: 'spoiler ';
 }
 
-.chat-spoiler:hover {
+.chat-format-spoiler:hover {
     color: white;
 }
 
-.chat-nick {
+.chat-format-nick {
     font-weight: bold;
 }
 
