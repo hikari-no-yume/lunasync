@@ -1018,7 +1018,7 @@
             var option, user = state.users[nick];
 
             option = document.createElement('li');
-            option.className = 'user';
+            option.className = 'user user--' + nick.toLowerCase();
             if (user.prefix === '@') {
                 option.className += ' user-op';
             } else if (user.prefix === '~') {
